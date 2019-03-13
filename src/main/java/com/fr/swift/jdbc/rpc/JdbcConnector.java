@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.rpc;
 
-import com.fr.swift.rpc.bean.RpcResponse;
-import com.fr.swift.rpc.bean.impl.RpcRequest;
+import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 /**
  * @author yee
@@ -13,7 +13,7 @@ public interface JdbcConnector extends JdbcComponent {
      *
      * @param object
      */
-    void fireRpcResponse(RpcResponse object);
+    void fireRpcResponse(SwiftResponse object);
 
     /**
      * 注册执行器
@@ -29,7 +29,7 @@ public interface JdbcConnector extends JdbcComponent {
      * @param timeout
      * @return
      */
-    boolean sendRpcObject(RpcRequest rpc, int timeout);
+    boolean sendRpcObject(SwiftRequest rpc, int timeout);
 
     void notifySend();
 }

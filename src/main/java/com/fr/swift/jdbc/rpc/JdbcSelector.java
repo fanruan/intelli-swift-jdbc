@@ -1,6 +1,6 @@
 package com.fr.swift.jdbc.rpc;
 
-import com.fr.swift.rpc.bean.RpcResponse;
+import com.fr.swift.basic.SwiftResponse;
 
 /**
  * @author yee
@@ -11,7 +11,7 @@ public interface JdbcSelector<T extends JdbcConnector> extends JdbcComponent {
 
     void notifySend();
 
-    void fireRpcResponse(T connector, RpcResponse object);
+    void fireRpcResponse(T connector, SwiftResponse object);
 
     void fireRpcException(T connector, Exception object);
 }
