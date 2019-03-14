@@ -3,8 +3,8 @@ package com.fr.swift.jdbc.rpc.invoke;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.rpc.JdbcConnector;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
-import com.fr.swift.rpc.bean.RpcResponse;
-import com.fr.swift.rpc.bean.impl.RpcRequest;
+import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,13 +35,13 @@ public class SimpleExecutor implements JdbcExecutor {
     }
 
     @Override
-    public RpcResponse send(RpcRequest request) {
+    public SwiftResponse send(SwiftRequest request) {
         CallBackSync sync = new CallBackSync(request.getRequestId(), request);
         rpcCache.put(request.getRequestId(), sync);
         connector.sendRpcObject(request, timeout);
         this.sync.waitForResult(timeout, sync);
         rpcCache.remove(sync.getRpcId());
-        RpcResponse response = sync.getResponse();
+        SwiftResponse response = sync.getResponse();
         if (response == null) {
             throw Exceptions.runtime("null rpc response");
         }
@@ -67,7 +67,7 @@ public class SimpleExecutor implements JdbcExecutor {
     }
 
     @Override
-    public void onRpcResponse(RpcResponse rpc) {
+    public void onRpcResponse(SwiftResponse rpc) {
         CallBackSync sync = rpcCache.get(rpc.getRequestId());
         if (sync != null && sync.getRpcId().equals(rpc.getRequestId())) {
             this.sync.notifyResult(sync, rpc);

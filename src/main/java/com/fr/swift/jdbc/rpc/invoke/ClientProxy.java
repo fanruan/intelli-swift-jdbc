@@ -1,8 +1,8 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
-import com.fr.swift.rpc.bean.RpcResponse;
-import com.fr.swift.rpc.bean.impl.RpcRequest;
+import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -35,13 +35,13 @@ public class ClientProxy {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
-            RpcRequest request = new RpcRequest();
+            SwiftRequest request = new SwiftRequest();
             request.setRequestId(UUID.randomUUID().toString());
             request.setInterfaceName(proxyClass.getName());
             request.setParameters(args);
             request.setMethodName(method.getName());
             request.setParameterTypes(method.getParameterTypes());
-            RpcResponse response = remoteExecutor.send(request);
+            SwiftResponse response = remoteExecutor.send(request);
             return response.getResult();
         }
     }
