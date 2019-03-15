@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.rpc;
 
-import com.fr.swift.basic.SwiftRequest;
 import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 /**
  * @author yee

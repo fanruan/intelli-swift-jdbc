@@ -6,8 +6,8 @@ import com.fr.swift.jdbc.rpc.connection.RpcNioConnector;
 import com.fr.swift.jdbc.rpc.invoke.BaseSelector;
 import com.fr.swift.jdbc.rpc.serializable.decoder.SerializableDecoder;
 import com.fr.swift.jdbc.rpc.serializable.encoder.SerializableEncoder;
-import com.fr.swift.rpc.bean.RpcResponse;
-import com.fr.swift.rpc.bean.impl.RpcRequest;
+import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 import java.io.IOException;
 import java.nio.channels.SelectableChannel;
@@ -154,8 +154,8 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
                 while (!stop.get()) {
                     try {
                         Object object = decoder.decodeFromChannel(client);
-                        if (object instanceof RpcResponse) {
-                            this.fireRpcResponse(connector, (RpcResponse) object);
+                        if (object instanceof SwiftResponse) {
+                            this.fireRpcResponse(connector, (SwiftResponse) object);
                         }
                         result = true;
                         break;
@@ -188,7 +188,7 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
         if (connector.isNeedToSend()) {
             try {
                 while (connector.isNeedToSend()) {
-                    RpcRequest rpc = connector.getRequest();
+                    SwiftRequest rpc = connector.getRequest();
                     channel.write(encoder.encodeBuf(rpc));
                     result = true;
                 }

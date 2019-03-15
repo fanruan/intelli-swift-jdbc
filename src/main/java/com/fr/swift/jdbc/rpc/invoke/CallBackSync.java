@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
-import com.fr.swift.basic.SwiftRequest;
 import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;

@@ -1,8 +1,8 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
-import com.fr.swift.basic.SwiftRequest;
-import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
+import com.fr.swift.basic.SwiftResponse;
+import com.fr.swift.basic.SwiftRequest;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

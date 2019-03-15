@@ -1,9 +1,9 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
-import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.rpc.JdbcConnector;
 import com.fr.swift.jdbc.rpc.JdbcSelector;
 import com.fr.swift.jdbc.thread.JdbcThreadFactory;
+import com.fr.swift.basic.SwiftResponse;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
