@@ -1,10 +1,10 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
+import com.fr.swift.basic.SwiftRequest;
+import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.rpc.JdbcConnector;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
-import com.fr.swift.rpc.bean.RpcResponse;
-import com.fr.swift.rpc.bean.impl.RpcRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class BaseConnector implements JdbcConnector {
     protected String host = "localhost";
     protected int port = 7000;
-    private ConcurrentLinkedQueue<RpcRequest> sendQueueCache = new ConcurrentLinkedQueue<RpcRequest>();
+    private ConcurrentLinkedQueue<SwiftRequest> sendQueueCache = new ConcurrentLinkedQueue<SwiftRequest>();
     private List<JdbcExecutor> rpcExecutors;
 
     public BaseConnector(String host, int port) {
@@ -40,7 +40,7 @@ public abstract class BaseConnector implements JdbcConnector {
     }
 
     @Override
-    public void fireRpcResponse(RpcResponse object) {
+    public void fireRpcResponse(SwiftResponse object) {
         for (JdbcExecutor rpcExecutor : rpcExecutors) {
             rpcExecutor.onRpcResponse(object);
         }
@@ -52,7 +52,7 @@ public abstract class BaseConnector implements JdbcConnector {
     }
 
     @Override
-    public boolean sendRpcObject(RpcRequest rpc, int timeout) {
+    public boolean sendRpcObject(SwiftRequest rpc, int timeout) {
         int cost = 0;
         while (!sendQueueCache.offer(rpc)) {
             cost += 3;
@@ -75,7 +75,7 @@ public abstract class BaseConnector implements JdbcConnector {
         stop();
     }
 
-    public RpcRequest getRequest() {
+    public SwiftRequest getRequest() {
         return sendQueueCache.poll();
     }
 

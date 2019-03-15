@@ -1,9 +1,9 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
+import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.rpc.JdbcConnector;
 import com.fr.swift.jdbc.rpc.JdbcSelector;
 import com.fr.swift.jdbc.thread.JdbcThreadFactory;
-import com.fr.swift.rpc.bean.RpcResponse;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,7 +19,7 @@ public abstract class BaseSelector<T extends JdbcConnector> implements JdbcSelec
     }
 
     @Override
-    public void fireRpcResponse(final T connector, final RpcResponse object) {
+    public void fireRpcResponse(final T connector, final SwiftResponse object) {
         singleNotifyThread.submit(new Runnable() {
             @Override
             public void run() {

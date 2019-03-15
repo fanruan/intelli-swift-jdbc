@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
-import com.fr.swift.rpc.bean.RpcResponse;
-import com.fr.swift.rpc.bean.impl.RpcRequest;
+import com.fr.swift.basic.SwiftRequest;
+import com.fr.swift.basic.SwiftResponse;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -10,38 +10,38 @@ import java.util.concurrent.TimeUnit;
  * @author yee
  * @date 2018/8/26
  */
-public class CallBackSync implements Future<RpcResponse> {
+public class CallBackSync implements Future<SwiftResponse> {
 
     private String rpcId;
 
     /**
      * 请求发送包
      */
-    private RpcRequest request;
+    private SwiftRequest request;
 
     /**
      * 请求返回数据包
      */
-    private RpcResponse response;
+    private SwiftResponse response;
 
-    public CallBackSync(String rpcId, RpcRequest request) {
+    public CallBackSync(String rpcId, SwiftRequest request) {
         this.rpcId = rpcId;
         this.request = request;
     }
 
-    public RpcRequest getRequest() {
+    public SwiftRequest getRequest() {
         return request;
     }
 
-    public void setRequest(RpcRequest request) {
+    public void setRequest(SwiftRequest request) {
         this.request = request;
     }
 
-    public RpcResponse getResponse() {
+    public SwiftResponse getResponse() {
         return response;
     }
 
-    public void setResponse(RpcResponse response) {
+    public void setResponse(SwiftResponse response) {
         this.response = response;
     }
 
@@ -69,12 +69,12 @@ public class CallBackSync implements Future<RpcResponse> {
     }
 
     @Override
-    public RpcResponse get() {
+    public SwiftResponse get() {
         return response;
     }
 
     @Override
-    public RpcResponse get(long timeout, TimeUnit unit) {
+    public SwiftResponse get(long timeout, TimeUnit unit) {
         return null;
     }
 
