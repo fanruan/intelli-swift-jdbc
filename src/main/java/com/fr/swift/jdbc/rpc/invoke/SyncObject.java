@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.rpc.invoke;
 
 import com.fr.swift.jdbc.exception.Exceptions;
-import com.fr.swift.rpc.bean.RpcResponse;
+import com.fr.swift.basic.SwiftResponse;
 
 /**
  * @author yee
@@ -23,7 +23,7 @@ public class SyncObject {
         }
     }
 
-    public void notifyResult(CallBackSync sync, RpcResponse rpc) {
+    public void notifyResult(CallBackSync sync, SwiftResponse rpc) {
         if (sync != null) {
             sync.setResponse(rpc);
         }
