@@ -1,6 +1,6 @@
 package com.fr.swift.jdbc.checker;
 
-import com.fr.swift.jdbc.info.SqlRequestInfo;
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 
 import java.sql.SQLException;
 
@@ -15,7 +15,7 @@ public interface GrammarChecker {
      *
      * @param sql         sql which is ready to check grammar
      * @param paramValues sql parameters if the statement is prepared
-     * @return sql request info
+     * @return sql requestType info
      * @throws SQLException the method would throw SQLException when
      *                      (1) prepared sql contains NullValue.INSTANCE
      *                      (2) paramValues are not match prepared sql's parameters

@@ -4,8 +4,8 @@ import com.fr.swift.api.info.AuthRequestInfo;
 import com.fr.swift.api.info.RequestInfo;
 import com.fr.swift.api.server.ApiServerService;
 import com.fr.swift.api.server.response.ApiResponse;
-import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.jdbc.exception.Exceptions;
+import com.fr.swift.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.jdbc.request.JdbcRequestService;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.jdbc.rpc.invoke.ClientProxy;
@@ -26,7 +26,7 @@ public class RequestServiceImpl implements JdbcRequestService {
     @Override
     public ApiResponse apply(JdbcExecutor sender, RequestInfo sql) {
         try {
-            String json = JsonBuilder.writeJsonString(sql);
+            String json = JdbcJsonBuilder.build(sql);
             return apply(sender, json);
         } catch (Exception e) {
             throw Exceptions.runtime("Build Json Exception", e);
@@ -48,7 +48,7 @@ public class RequestServiceImpl implements JdbcRequestService {
     @Override
     public ApiResponse applyWithRetry(JdbcExecutor sender, RequestInfo sql, int retryTime) {
         try {
-            String json = JsonBuilder.writeJsonString(sql);
+            String json = JdbcJsonBuilder.build(sql);
             return applyWithRetry(sender, json, retryTime);
         } catch (Exception e) {
             throw Exceptions.runtime("Build Json Exception", e);

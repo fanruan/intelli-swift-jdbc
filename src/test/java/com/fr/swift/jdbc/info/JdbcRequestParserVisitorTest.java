@@ -1,6 +1,10 @@
 package com.fr.swift.jdbc.info;
 
 import com.fr.swift.api.info.ApiInvocation;
+import com.fr.swift.api.info.jdbc.ColumnsRequestInfo;
+import com.fr.swift.api.info.jdbc.JdbcRequestParserVisitor;
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
+import com.fr.swift.api.info.jdbc.TablesRequestInfo;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;

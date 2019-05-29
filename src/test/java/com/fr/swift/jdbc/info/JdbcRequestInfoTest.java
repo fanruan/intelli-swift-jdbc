@@ -1,5 +1,8 @@
 package com.fr.swift.jdbc.info;
 
+import com.fr.swift.api.info.jdbc.ColumnsRequestInfo;
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
+import com.fr.swift.api.info.jdbc.TablesRequestInfo;
 import com.fr.swift.base.json.JsonBuilder;
 import org.junit.Test;
 
