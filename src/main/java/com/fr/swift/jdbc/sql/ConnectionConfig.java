@@ -32,7 +32,7 @@ public interface ConnectionConfig {
     String swiftDatabase();
 
     /**
-     * return requestType sender
+     * return request sender
      *
      * @return
      */

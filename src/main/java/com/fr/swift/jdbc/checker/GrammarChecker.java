@@ -15,7 +15,7 @@ public interface GrammarChecker {
      *
      * @param sql         sql which is ready to check grammar
      * @param paramValues sql parameters if the statement is prepared
-     * @return sql requestType info
+     * @return sql request info
      * @throws SQLException the method would throw SQLException when
      *                      (1) prepared sql contains NullValue.INSTANCE
      *                      (2) paramValues are not match prepared sql's parameters
