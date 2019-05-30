@@ -1,8 +1,8 @@
 package com.fr.swift.jdbc.sql;
 
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.api.result.BaseApiResultSet;
 import com.fr.swift.api.result.SwiftApiResultSet;
-import com.fr.swift.jdbc.info.SqlRequestInfo;
 
 import java.sql.SQLException;
 

@@ -1,11 +1,11 @@
 package com.fr.swift.jdbc.request.impl;
 
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.api.server.response.ApiResponse;
-import com.fr.swift.jdbc.info.SqlRequestInfo;
+import com.fr.swift.basic.SwiftRequest;
+import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.result.SerializableResultSet;
-import com.fr.swift.basic.SwiftResponse;
-import com.fr.swift.basic.SwiftRequest;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;

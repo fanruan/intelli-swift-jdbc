@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.sql;
 
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.jdbc.checker.GrammarChecker;
-import com.fr.swift.jdbc.info.SqlRequestInfo;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 
 import java.sql.SQLException;

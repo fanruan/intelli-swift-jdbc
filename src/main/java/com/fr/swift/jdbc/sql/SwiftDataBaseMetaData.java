@@ -1,12 +1,12 @@
 package com.fr.swift.jdbc.sql;
 
+import com.fr.swift.api.info.jdbc.ColumnsRequestInfo;
+import com.fr.swift.api.info.jdbc.TablesRequestInfo;
 import com.fr.swift.api.server.response.ApiResponse;
 import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.jdbc.JdbcProperty;
 import com.fr.swift.jdbc.SwiftJdbcConstants;
 import com.fr.swift.jdbc.exception.Exceptions;
-import com.fr.swift.jdbc.info.ColumnsRequestInfo;
-import com.fr.swift.jdbc.info.TablesRequestInfo;
 import com.fr.swift.jdbc.result.IteratorBasedResultSet;
 import com.fr.swift.jdbc.result.ResultSetWrapper;
 import com.fr.swift.source.ListBasedRow;

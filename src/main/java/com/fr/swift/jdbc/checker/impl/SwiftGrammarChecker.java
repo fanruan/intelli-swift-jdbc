@@ -1,11 +1,11 @@
 package com.fr.swift.jdbc.checker.impl;
 
+import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.jdbc.checker.GrammarChecker;
 import com.fr.swift.jdbc.druid.sql.SQLUtils;
 import com.fr.swift.jdbc.druid.sql.ast.SQLStatement;
 import com.fr.swift.jdbc.druid.sql.ast.statement.SQLSelectStatement;
 import com.fr.swift.jdbc.exception.Exceptions;
-import com.fr.swift.jdbc.info.SqlRequestInfo;
 import com.fr.swift.jdbc.sql.SwiftPreparedStatement;
 
 import java.sql.SQLException;
