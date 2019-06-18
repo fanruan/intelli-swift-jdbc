@@ -58,7 +58,7 @@ public class MetadataWrapper extends BaseResultSetMetaData {
 
     @Override
     public String getCatalogName(int column) {
-        return metaData.getSwiftDatabase().getName();
+        return metaData.getSwiftSchema().getName();
     }
 
     @Override
