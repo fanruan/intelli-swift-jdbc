@@ -1,10 +1,8 @@
 package com.fr.swift.jdbc.checker.impl;
 
 import com.fr.swift.api.info.jdbc.SqlRequestInfo;
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.checker.GrammarChecker;
-import com.fr.swift.jdbc.druid.sql.SQLUtils;
-import com.fr.swift.jdbc.druid.sql.ast.SQLStatement;
-import com.fr.swift.jdbc.druid.sql.ast.statement.SQLSelectStatement;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.sql.SwiftPreparedStatement;
 
@@ -30,12 +28,7 @@ public class SwiftGrammarChecker implements GrammarChecker {
             sql = getRealSql(sql, Arrays.asList(paramValues), paramCount);
         }
         try {
-            List<SQLStatement> list = SQLUtils.parseStatements(sql, null);
-            if (list.get(0) instanceof SQLSelectStatement) {
-                return new SqlRequestInfo(sql, true);
-            } else {
-                return new SqlRequestInfo(sql, false);
-            }
+            return new SqlRequestInfo(sql, SwiftSqlParseUtil.isSelect(sql));
         } catch (Exception e) {
             throw Exceptions.sqlIncorrect(sql, e);
         }
