@@ -45,7 +45,14 @@ public class SwiftSqlParserListenerImpl extends SwiftSqlParserBaseListener {
 
     @Override
     public void exitSelect(SwiftSqlParser.SelectContext ctx) {
-        handler.handle(selectListener.getSelectionBean());
+        selectListener.exitSelect(ctx);
+    }
+
+    @Override
+    public void exitSql(SwiftSqlParser.SqlContext ctx) {
+        if (null != selectListener.getSelectionBean()) {
+            handler.handle(selectListener.getSelectionBean());
+        }
     }
 
     @Override

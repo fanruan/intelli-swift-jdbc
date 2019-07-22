@@ -10,6 +10,9 @@ import com.fr.swift.jdbc.visitor.WhereVisitor;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.DimensionBean;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
+import com.fr.swift.query.info.bean.element.filter.impl.DetailFilterInfoBean;
+import com.fr.swift.query.info.bean.post.HavingFilterQueryInfoBean;
+import com.fr.swift.query.info.bean.post.PostQueryInfoBean;
 import com.fr.swift.query.info.bean.query.DetailQueryInfoBean;
 import com.fr.swift.query.info.bean.query.GroupQueryInfoBean;
 import com.fr.swift.query.info.bean.query.QueryInfoBean;
@@ -22,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO 2019/07/09 distinct和子查询
- *
  * @author yee
  * @date 2019-07-19
  */
@@ -32,10 +33,10 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
 
     @Override
     public void enterSelect(SwiftSqlParser.SelectContext ctx) {
-        if (ctx.subQuery != null) {
-            enterSelect(ctx.subQuery);
-            // TODO 2019/07/19 子查询解析
-        } else {
+        if (ctx.subQuery == null) {
+            // distinct 只能跟在select 后面   第0号是select  第1号是distinct
+            ParseTree child = ctx.getChild(1);
+            boolean distinct = child instanceof TerminalNode && ((TerminalNode) child).getSymbol().getType() == SwiftSqlParser.DISTINCT;
             SwiftSqlParser.NameContext table = ctx.table;
             String tableName = table.getText();
             SwiftSqlParser.NamesContext groupBy = ctx.groupBy;
@@ -62,18 +63,49 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                 visitColumns(columns, dimensionBeans, metricBeans);
 
                 if (metricBeans.isEmpty()) {
-                    if (dimensionBeans.size() > 1 || dimensionBeans.get(0).getType() != DimensionType.DETAIL_ALL_COLUMN) {
-                        for (DimensionBean dimensionBean : dimensionBeans) {
-                            dimensionBean.setType(DimensionType.DETAIL);
+                    if (distinct) {
+                        bean = GroupQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).build();
+                    } else {
+                        if ((dimensionBeans.size() > 1 || dimensionBeans.get(0).getType() != DimensionType.DETAIL_ALL_COLUMN)) {
+                            for (DimensionBean dimensionBean : dimensionBeans) {
+                                dimensionBean.setType(DimensionType.DETAIL);
+                            }
                         }
+                        bean = DetailQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).build();
                     }
-                    bean = DetailQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).build();
                 } else {
                     bean = GroupQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setAggregations(metricBeans).setFilter(filter).build();
                 }
             }
         }
 
+    }
+
+    @Override
+    public void exitSelect(SwiftSqlParser.SelectContext ctx) {
+        // TODO 2019/07/21 这种后台好像还没支持
+        if (ctx.subQuery != null) {
+            if (ctx.where != null) {
+                List<PostQueryInfoBean> postBean = new ArrayList<>();
+                FilterInfoBean filter = ctx.where.accept(new WhereVisitor());
+                switch (filter.getType()) {
+                    case ALL_SHOW:
+                    case AND:
+                    case OR:
+                    case NULL:
+                        // TODO 现有结构不好处理
+                        break;
+                    default:
+                        if (bean instanceof DetailQueryInfoBean) {
+                            // TODO 不支持对detail表post
+                            break;
+                        }
+                        String column = ((DetailFilterInfoBean) filter).getColumn();
+                        postBean.add(new HavingFilterQueryInfoBean(column, filter));
+                        ((GroupQueryInfoBean) bean).setPostAggregations(postBean);
+                }
+            }
+        }
     }
 
     private void visitColumns(SwiftSqlParser.ColumnsContext columns,
@@ -140,6 +172,6 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
 
     @Override
     public SelectionBean getSelectionBean() {
-        return new SelectionBean(Strings.EMPTY, bean.getTableName(), bean);
+        return null != bean ? new SelectionBean(Strings.EMPTY, bean.getTableName(), bean) : null;
     }
 }
