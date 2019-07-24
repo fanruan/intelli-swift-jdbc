@@ -20,7 +20,7 @@ public class JdbcJsonBuilder {
             buffer.setLength(buffer.length() - 1);
         }
         buffer.append("}");
-        return buffer.toString();
+        return buffer.toString().replaceAll("\\n", " ");
     }
 
     private static void buildClassFieldJson(StringBuffer buffer, Class clazz, Object o) {

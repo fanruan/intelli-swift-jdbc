@@ -2,6 +2,7 @@ package com.fr.swift.jdbc.listener;
 
 import com.fr.swift.jdbc.adaptor.SelectionBeanParser;
 import com.fr.swift.jdbc.adaptor.bean.SelectionBean;
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParserBaseListener;
 import com.fr.swift.jdbc.visitor.FunctionVisitor;
@@ -38,7 +39,7 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
             ParseTree child = ctx.getChild(1);
             boolean distinct = child instanceof TerminalNode && ((TerminalNode) child).getSymbol().getType() == SwiftSqlParser.DISTINCT;
             SwiftSqlParser.NameContext table = ctx.table;
-            String tableName = table.getText();
+            String tableName = SwiftSqlParseUtil.trimQuote(table.getText(), "`");
             SwiftSqlParser.NamesContext groupBy = ctx.groupBy;
             FilterInfoBean filter = null;
             if (ctx.where != null) {

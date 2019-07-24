@@ -7,6 +7,7 @@ import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.jdbc.JdbcProperty;
 import com.fr.swift.jdbc.SwiftJdbcConstants;
 import com.fr.swift.jdbc.exception.Exceptions;
+import com.fr.swift.jdbc.result.EmptyResultSet;
 import com.fr.swift.jdbc.result.IteratorBasedResultSet;
 import com.fr.swift.jdbc.result.ResultSetWrapper;
 import com.fr.swift.source.ListBasedRow;
@@ -771,7 +772,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getPrimaryKeys(String catalog, String schema, String table) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, new HashMap<String, Integer>());
     }
 
     @Override
@@ -781,7 +782,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getExportedKeys(String catalog, String schema, String table) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, new HashMap<String, Integer>());
     }
 
     @Override
