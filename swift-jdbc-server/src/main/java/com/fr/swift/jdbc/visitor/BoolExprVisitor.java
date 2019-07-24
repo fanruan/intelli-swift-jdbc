@@ -198,7 +198,7 @@ public class BoolExprVisitor extends AbstractParseTreeVisitor<FilterInfoBean> {
                     if (expers.size() > 1) {
                         format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), "'");
                         if (!this.formatMap.containsKey(format)) {
-                            visitErrorNode(new ErrorNodeImpl(expers.get(1).start));
+                            BoolExprVisitor.this.visitErrorNode(new ErrorNodeImpl(expers.get(1).start));
                         }
                     } else {
                         format = "yyyy-MM-dd HH:mm:ss";
@@ -221,7 +221,7 @@ public class BoolExprVisitor extends AbstractParseTreeVisitor<FilterInfoBean> {
                                 return time;
                         }
                     } catch (ParseException e) {
-                        visitErrorNode(new ErrorNodeImpl(expers.get(0).start));
+                        BoolExprVisitor.this.visitErrorNode(new ErrorNodeImpl(expers.get(0).start));
                     }
                 default:
                     // TODO 其他方法的过滤暂时不支持
