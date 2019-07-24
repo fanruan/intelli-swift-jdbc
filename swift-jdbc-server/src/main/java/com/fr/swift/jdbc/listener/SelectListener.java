@@ -22,7 +22,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yee
@@ -115,6 +117,7 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
         boolean dimension = true;
         DimensionBean aliasDimension = null;
         AggregationBean aliasAggregation = null;
+        Map<String, Integer> nameMap = new HashMap<>();
         for (int i = 0; i < childCount; i++) {
             ParseTree child = columns.getChild(i);
             if (child instanceof TerminalNode) {
@@ -140,7 +143,8 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                             // TODO 2019/07/19 直接传简单值暂时不支持
                             break;
                         default:
-                            dimensionBeans.add(new DimensionBean(DimensionType.GROUP, child.getText()));
+                            String alias = child.getText();
+                            dimensionBeans.add(new DimensionBean(DimensionType.GROUP, child.getText(), rename(nameMap, alias)));
                     }
                     dimension = true;
                 }
@@ -154,14 +158,27 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                 }
             } else if (child instanceof SwiftSqlParser.NameContext) {
                 if (null != aliasAggregation) {
-                    aliasAggregation.setAlias(child.getText());
+                    String alias = child.getText();
+                    aliasAggregation.setAlias(rename(nameMap, alias));
                     aliasAggregation = null;
                 }
                 if (null != aliasDimension) {
-                    aliasDimension.setAlias(child.getText());
+                    String alias = child.getText();
+                    aliasDimension.setAlias(rename(nameMap, alias));
                     aliasDimension = null;
                 }
             }
+        }
+    }
+
+    private String rename(Map<String, Integer> nameMap, String alias) {
+        if (nameMap.containsKey(alias)) {
+            int newCount = nameMap.get(alias) + 1;
+            nameMap.put(alias, newCount);
+            return alias + newCount;
+        } else {
+            nameMap.put(alias, 0);
+            return alias;
         }
     }
 
