@@ -6,7 +6,9 @@ import com.fr.swift.jdbc.creator.FilterBeanCreator;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
 import com.fr.swift.query.info.bean.element.filter.impl.AndFilterBean;
 import com.fr.swift.query.info.bean.element.filter.impl.OrFilterBean;
+import com.fr.swift.structure.Pair;
 import com.fr.swift.util.Strings;
+import com.fr.swift.util.function.Function;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ErrorNodeImpl;
@@ -14,10 +16,15 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -98,7 +105,12 @@ public class BoolExprVisitor extends AbstractParseTreeVisitor<FilterInfoBean> {
                     if (Strings.isEmpty(column)) {
                         column = child.getText();
                     } else {
-                        value = SwiftSqlParseUtil.trimQuote(child.getText(), "'");
+                        SwiftSqlParser.FuncExprContext funcExprContext = ((SwiftSqlParser.SimpleExprContext) child).funcExpr();
+                        if (null != funcExprContext) {
+                            value = funcExprContext.accept(new FilterFuncValueVisitor(creator.type()));
+                        } else {
+                            value = SwiftSqlParseUtil.trimQuote(child.getText(), "'");
+                        }
                     }
                 } else if (child instanceof SwiftSqlParser.BoolOpContext) {
                     creator = child.accept(new com.fr.swift.jdbc.visitor.BoolOpVisitor());
@@ -130,7 +142,7 @@ public class BoolExprVisitor extends AbstractParseTreeVisitor<FilterInfoBean> {
      * @author yee
      * @date 2019-07-19
      */
-    public static class ValueExprVisitor extends AbstractParseTreeVisitor<Set<String>> {
+    public class ValueExprVisitor extends AbstractParseTreeVisitor<Set<String>> {
         @Override
         public Set<String> visitChildren(RuleNode node) {
             Set<String> set = new HashSet<>();
@@ -147,6 +159,74 @@ public class BoolExprVisitor extends AbstractParseTreeVisitor<FilterInfoBean> {
                 return Collections.singleton(value);
             }
             return set;
+        }
+    }
+
+    private class FilterFuncValueVisitor extends AbstractParseTreeVisitor {
+        private Map<String, Integer> formatMap;
+        private int filterType;
+        private Function<Pair<Calendar, Integer>, Long> calDate = new Function<Pair<Calendar, Integer>, Long>() {
+            @Override
+            public Long apply(Pair<Calendar, Integer> p) {
+                Integer calendarField = p.getValue();
+                Calendar calendar = p.getKey();
+                calendar.add(calendarField, 1);
+                return calendar.getTimeInMillis();
+            }
+        };
+
+        public FilterFuncValueVisitor(int filterType) {
+            this.filterType = filterType;
+            this.formatMap = new HashMap<>();
+            this.formatMap.put("yyyy", Calendar.YEAR);
+            this.formatMap.put("yyyy-MM", Calendar.MONTH);
+            this.formatMap.put("yyyy-MM-dd", Calendar.DAY_OF_YEAR);
+            this.formatMap.put("yyyy-MM-dd HH", Calendar.HOUR);
+            this.formatMap.put("yyyy-MM-dd HH:mm", Calendar.MINUTE);
+            this.formatMap.put("yyyy-MM-dd HH:mm:ss", Calendar.SECOND);
+        }
+
+        @Override
+        public Object visitChildren(RuleNode node) {
+            SwiftSqlParser.FuncExprContext funcExprContext = (SwiftSqlParser.FuncExprContext) node;
+            switch (funcExprContext.start.getType()) {
+                case SwiftSqlParser.TODATE:
+                    List<SwiftSqlParser.SimpleExprContext> expers = funcExprContext.simpleExpr();
+                    String value = SwiftSqlParseUtil.trimQuote(expers.get(0).getText(), "'");
+                    SimpleDateFormat sdf = null;
+                    String format;
+                    if (expers.size() > 1) {
+                        format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), "'");
+                        if (!this.formatMap.containsKey(format)) {
+                            visitErrorNode(new ErrorNodeImpl(expers.get(1).start));
+                        }
+                    } else {
+                        format = "yyyy-MM-dd HH:mm:ss";
+                    }
+                    sdf = new SimpleDateFormat(format);
+                    try {
+                        long time = sdf.parse(value).getTime();
+                        Calendar instance = Calendar.getInstance();
+                        instance.setTimeInMillis(time);
+
+                        long maxTime = calDate.apply(Pair.of(instance, formatMap.get(format)));
+                        switch (filterType) {
+                            case SwiftSqlParser.EQ:
+                            case SwiftSqlParser.NEQ:
+                            case SwiftSqlParser.IN:
+                                return Pair.of(time, maxTime);
+                            case SwiftSqlParser.GREATER:
+                                return maxTime - 1;
+                            default:
+                                return time;
+                        }
+                    } catch (ParseException e) {
+                        visitErrorNode(new ErrorNodeImpl(expers.get(0).start));
+                    }
+                default:
+                    // TODO 其他方法的过滤暂时不支持
+                    return SwiftSqlParseUtil.trimQuote(node.getText(), "'");
+            }
         }
     }
 }
