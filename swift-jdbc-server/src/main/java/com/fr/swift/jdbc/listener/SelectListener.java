@@ -2,6 +2,7 @@ package com.fr.swift.jdbc.listener;
 
 import com.fr.swift.jdbc.adaptor.SelectionBeanParser;
 import com.fr.swift.jdbc.adaptor.bean.SelectionBean;
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParserBaseListener;
 import com.fr.swift.jdbc.visitor.FunctionVisitor;
@@ -9,6 +10,8 @@ import com.fr.swift.jdbc.visitor.OrderByVisitor;
 import com.fr.swift.jdbc.visitor.WhereVisitor;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.DimensionBean;
+import com.fr.swift.query.info.bean.element.ToDateFormatFormulaBean;
+import com.fr.swift.query.info.bean.element.ToDateFormulaBean;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
 import com.fr.swift.query.info.bean.element.filter.impl.AndFilterBean;
 import com.fr.swift.query.info.bean.element.filter.impl.DetailFilterInfoBean;
@@ -73,7 +76,11 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                     } else {
                         if ((dimensionBeans.size() > 1 || dimensionBeans.get(0).getType() != DimensionType.DETAIL_ALL_COLUMN)) {
                             for (DimensionBean dimensionBean : dimensionBeans) {
-                                dimensionBean.setType(DimensionType.DETAIL);
+                                if (dimensionBean.getType() == DimensionType.GROUP_FORMULA) {
+                                    dimensionBean.setType(DimensionType.DETAIL_FORMULA);
+                                } else {
+                                    dimensionBean.setType(DimensionType.DETAIL);
+                                }
                             }
                         }
                         bean = DetailQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).build();
@@ -200,11 +207,31 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                 SwiftSqlParser.FuncExprContext funcExprContext = ((SwiftSqlParser.SimpleExprContext) child).funcExpr();
                 if (funcExprContext != null) {
                     if (funcExprContext.start.getType() == SwiftSqlParser.TODATE) {
-                        // TODO 2019/07/19 todate应该转换成postquery？还是转换成dimension在取数的时候就正常format
+                        DimensionBean dimensionBean = new DimensionBean(DimensionType.GROUP_FORMULA, funcExprContext.simpleExpr(0).getText());
+                        List<SwiftSqlParser.SimpleExprContext> expers = funcExprContext.simpleExpr();
+                        if (expers.size() == 1) {
+                            try {
+                                long time = Long.parseLong(expers.get(0).getText());
+                                dimensionBean.setFormula(new ToDateFormulaBean(funcExprContext.getText(), time));
+                            } catch (Exception e) {
+                                dimensionBean.setFormula(new ToDateFormulaBean(funcExprContext.getText(), expers.get(0).getText()));
+                            }
+                        } else {
+                            String format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), "'");
+                            try {
+                                long time = Long.parseLong(expers.get(0).getText());
+                                dimensionBean.setFormula(new ToDateFormatFormulaBean(funcExprContext.getText(), time, format));
+                            } catch (Exception e) {
+                                dimensionBean.setFormula(new ToDateFormatFormulaBean(funcExprContext.getText(), expers.get(0).getText(), format));
+                            }
+                        }
+                        dimensionBean.setAlias(funcExprContext.getText());
+                        dimensionBeans.add(dimensionBean);
+                        dimension = true;
                     } else {
                         metricBeans.add(funcExprContext.accept(new FunctionVisitor()));
+                        dimension = false;
                     }
-                    dimension = false;
                 } else {
                     int type = ((SwiftSqlParser.SimpleExprContext) child).start.getType();
                     switch (type) {

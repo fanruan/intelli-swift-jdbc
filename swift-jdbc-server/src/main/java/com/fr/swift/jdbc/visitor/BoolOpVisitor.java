@@ -9,6 +9,7 @@ import com.fr.swift.query.info.bean.element.filter.impl.NotFilterBean;
 import com.fr.swift.query.info.bean.element.filter.impl.NullFilterBean;
 import com.fr.swift.query.info.bean.element.filter.impl.NumberInRangeFilterBean;
 import com.fr.swift.query.info.bean.element.filter.impl.StringOneValueFilterBean;
+import com.fr.swift.structure.Pair;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -32,6 +33,11 @@ public class BoolOpVisitor extends AbstractParseTreeVisitor<FilterBeanCreator<Fi
                     return new BaseFilterBeanCreator(type) {
                         @Override
                         public FilterInfoBean create(String column, Object value) {
+                            if (value instanceof Pair) {
+                                return NumberInRangeFilterBean.builder(column)
+                                        .setStart(((Pair) value).getKey().toString(), false)
+                                        .setEnd(((Pair) value).getValue().toString(), false).build();
+                            }
                             return new InFilterBean(column, value);
                         }
                     };
@@ -39,7 +45,15 @@ public class BoolOpVisitor extends AbstractParseTreeVisitor<FilterBeanCreator<Fi
                     return new BaseFilterBeanCreator(type) {
                         @Override
                         public FilterInfoBean create(String column, Object value) {
-                            return new NotFilterBean(new InFilterBean(column, value));
+                            FilterInfoBean bean = null;
+                            if (value instanceof Pair) {
+                                bean = NumberInRangeFilterBean.builder(column)
+                                        .setStart(((Pair) value).getKey().toString(), false)
+                                        .setEnd(((Pair) value).getValue().toString(), false).build();
+                            } else {
+                                bean = new InFilterBean(column, value);
+                            }
+                            return new NotFilterBean(bean);
                         }
                     };
                 case SwiftSqlParser.GREATER:
