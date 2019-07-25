@@ -46,7 +46,7 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
             ParseTree child = ctx.getChild(1);
             boolean distinct = child instanceof TerminalNode && ((TerminalNode) child).getSymbol().getType() == SwiftSqlParser.DISTINCT;
             SwiftSqlParser.NameContext table = ctx.table;
-            String tableName = table.getText();
+            String tableName = SwiftSqlParseUtil.trimQuote(table.getText(), "`");
             SwiftSqlParser.NamesContext groupBy = ctx.groupBy;
             FilterInfoBean filter = null;
             if (ctx.where != null) {
