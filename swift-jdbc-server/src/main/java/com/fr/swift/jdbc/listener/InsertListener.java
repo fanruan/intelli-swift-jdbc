@@ -2,13 +2,10 @@ package com.fr.swift.jdbc.listener;
 
 import com.fr.swift.jdbc.adaptor.InsertionBeanParser;
 import com.fr.swift.jdbc.adaptor.bean.InsertionBean;
-import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParserBaseListener;
-import com.fr.swift.source.ListBasedRow;
+import com.fr.swift.jdbc.visitor.insert.InsertValueVisitor;
 import com.fr.swift.source.Row;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
-import org.antlr.v4.runtime.tree.RuleNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,7 @@ public class InsertListener extends SwiftSqlParserBaseListener implements Insert
     @Override
     public void enterInsert(SwiftSqlParser.InsertContext ctx) {
         List<Row> rows = new ArrayList<>();
-        InsertVisitor visitor = new InsertVisitor();
+        InsertValueVisitor visitor = new InsertValueVisitor();
         for (SwiftSqlParser.ValuesContext value : ctx.values()) {
             rows.add(value.accept(visitor));
         }
@@ -45,20 +42,4 @@ public class InsertListener extends SwiftSqlParserBaseListener implements Insert
         return insertionBean;
     }
 
-    private class InsertVisitor extends AbstractParseTreeVisitor<Row> {
-        @Override
-        public Row visitChildren(RuleNode node) {
-            SwiftSqlParser.ValuesContext values = (SwiftSqlParser.ValuesContext) node;
-            List<Object> data = new ArrayList<>();
-            for (SwiftSqlParser.ValueContext valueContext : values.value()) {
-                String text = valueContext.getText();
-                if (valueContext.start.getType() == SwiftSqlParser.NUMERIC_LITERAL) {
-                    data.add(Double.parseDouble(text));
-                } else {
-                    data.add(SwiftSqlParseUtil.trimQuote(text, "'"));
-                }
-            }
-            return new ListBasedRow(data);
-        }
-    }
 }

@@ -1,10 +1,10 @@
-package com.fr.swift.jdbc.visitor;
+package com.fr.swift.jdbc.visitor.select;
 
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
+import com.fr.swift.jdbc.visitor.BaseVisitor;
 import com.fr.swift.query.aggregator.AggregatorType;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.MetricBean;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.RuleNode;
 
 /**
@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.tree.RuleNode;
  * @author yee
  * @date 2019-07-19
  */
-public class FunctionVisitor extends AbstractParseTreeVisitor<AggregationBean> {
+public class FunctionVisitor extends BaseVisitor<AggregationBean> {
 
     @Override
     public AggregationBean visitChildren(RuleNode node) {
