@@ -1,17 +1,14 @@
 package com.fr.swift.jdbc.request.impl;
 
-import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.api.server.response.ApiResponse;
 import com.fr.swift.basic.SwiftRequest;
 import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
-import com.fr.swift.result.SerializableResultSet;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;
 
 import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
 
 /**
  * @author yee
@@ -34,23 +31,6 @@ public class RequestServiceImplTest {
         PowerMock.verifyAll();
     }
 
-    @Test
-    public void apply1() {
-        // Generate by Mock Plugin
-        JdbcExecutor mockJdbcExecutor = PowerMock.createMock(JdbcExecutor.class);
-        ApiResponse mockApiResponse = PowerMock.createMock(ApiResponse.class);
-        SerializableResultSet mockSerializableResultSet = PowerMock.createMock(SerializableResultSet.class);
-        EasyMock.expect(mockApiResponse.isError()).andReturn(false).anyTimes();
-        EasyMock.expect(mockApiResponse.result()).andReturn(mockSerializableResultSet);
-        SwiftResponse mockRpcResponse = PowerMock.createMock(SwiftResponse.class);
-        EasyMock.expect(mockRpcResponse.getResult()).andReturn(mockApiResponse).anyTimes();
-        EasyMock.expect(mockJdbcExecutor.send(EasyMock.notNull(SwiftRequest.class))).andReturn(mockRpcResponse).anyTimes();
-        PowerMock.replayAll();
-        ApiResponse response = new RequestServiceImpl().apply(mockJdbcExecutor, new SqlRequestInfo("select * from tableA", true));
-        assertFalse(response.isError());
-        assertTrue(response.result() instanceof SerializableResultSet);
-        PowerMock.verifyAll();
-    }
 
     @Test
     public void apply2() {
@@ -82,23 +62,6 @@ public class RequestServiceImplTest {
         PowerMock.verifyAll();
     }
 
-    @Test
-    public void applyWithRetry1() {
-        // Generate by Mock Plugin
-        JdbcExecutor mockJdbcExecutor = PowerMock.createMock(JdbcExecutor.class);
-        ApiResponse mockApiResponse = PowerMock.createMock(ApiResponse.class);
-        SerializableResultSet mockSerializableResultSet = PowerMock.createMock(SerializableResultSet.class);
-        EasyMock.expect(mockApiResponse.isError()).andReturn(true).times(2);
-        EasyMock.expect(mockApiResponse.isError()).andReturn(false).once();
-        EasyMock.expect(mockApiResponse.result()).andReturn(mockSerializableResultSet);
-        SwiftResponse mockRpcResponse = PowerMock.createMock(SwiftResponse.class);
-        EasyMock.expect(mockRpcResponse.getResult()).andReturn(mockApiResponse).times(3);
-        EasyMock.expect(mockJdbcExecutor.send(EasyMock.notNull(SwiftRequest.class))).andReturn(mockRpcResponse).times(3);
-        PowerMock.replayAll();
-        ApiResponse response = new RequestServiceImpl().applyWithRetry(mockJdbcExecutor, new SqlRequestInfo("select * from tableA", true), 3);
-        assertTrue(response.result() instanceof SerializableResultSet);
-        PowerMock.verifyAll();
-    }
 
     @Test
     public void applyWithRetry2() {

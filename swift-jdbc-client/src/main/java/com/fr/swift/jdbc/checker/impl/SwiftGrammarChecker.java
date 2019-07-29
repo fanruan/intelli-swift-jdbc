@@ -1,9 +1,9 @@
 package com.fr.swift.jdbc.checker.impl;
 
-import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.checker.GrammarChecker;
 import com.fr.swift.jdbc.exception.Exceptions;
+import com.fr.swift.jdbc.sql.SqlBean;
 import com.fr.swift.jdbc.sql.SwiftPreparedStatement;
 
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
  */
 public class SwiftGrammarChecker implements GrammarChecker {
     @Override
-    public SqlRequestInfo check(String sql, Object... paramValues) throws SQLException {
+    public SqlBean check(String sql, Object... paramValues) throws SQLException {
         Matcher matcher = SwiftPreparedStatement.VALUE_POS_PATTERN.matcher(sql);
         int paramCount = 0;
         while (matcher.find()) {
@@ -28,7 +28,7 @@ public class SwiftGrammarChecker implements GrammarChecker {
             sql = getRealSql(sql, Arrays.asList(paramValues), paramCount);
         }
         try {
-            return new SqlRequestInfo(sql, SwiftSqlParseUtil.isSelect(sql));
+            return new SqlBean(sql, SwiftSqlParseUtil.isSelect(sql));
         } catch (Exception e) {
             throw Exceptions.sqlIncorrect(sql, e);
         }

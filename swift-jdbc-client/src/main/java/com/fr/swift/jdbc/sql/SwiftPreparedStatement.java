@@ -9,6 +9,7 @@ import com.fr.swift.jdbc.result.ResultSetWrapper;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.source.ListBasedRow;
 import com.fr.swift.source.Row;
+import com.fr.swift.structure.Pair;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -30,10 +31,10 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,20 +67,21 @@ public class SwiftPreparedStatement extends SwiftStatementImpl implements Prepar
 
     @Override
     public ResultSet executeQuery() throws SQLException {
-        SqlRequestInfo info = grammarChecker.check(sql, values.toArray());
+        SqlBean info = grammarChecker.check(sql, values.toArray());
         if (info.isSelect()) {
-            SwiftApiResultSet<SqlRequestInfo> result = execute(info, queryExecutor);
-            JdbcSwiftResultSet resultSet = new JdbcSwiftResultSet(info, result, this);
+            String requestId = UUID.randomUUID().toString();
+            SwiftApiResultSet<SqlRequestInfo> result = execute(info.getSql(), requestId, queryExecutor);
+            JdbcSwiftResultSet resultSet = new JdbcSwiftResultSet(Pair.of(info.getSql(), requestId), result, this);
             return new ResultSetWrapper(resultSet, result.getLabel2Index());
         } else {
             int result = executeUpdate();
-            return new MaintainResultSet(Arrays.<Row>asList(new ListBasedRow(result)).iterator(), Arrays.asList("affects"));
+            return new MaintainResultSet(Collections.<Row>singletonList(new ListBasedRow(result)).iterator(), Collections.singletonList("affects"));
         }
     }
 
     @Override
     public int executeUpdate() throws SQLException {
-        SqlRequestInfo info = grammarChecker.check(sql, values.toArray());
+        SqlBean info = grammarChecker.check(sql, values.toArray());
         return executeUpdate(info);
     }
 

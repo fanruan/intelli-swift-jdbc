@@ -1,6 +1,5 @@
 package com.fr.swift.jdbc.sql;
 
-import com.fr.swift.api.info.RequestInfo;
 import com.fr.swift.api.server.response.ApiResponse;
 import com.fr.swift.jdbc.BuildInConnectionProperty;
 import com.fr.swift.jdbc.SwiftJdbcConstants;
@@ -356,8 +355,8 @@ public abstract class BaseSwiftConnection implements Connection {
         return false;
     }
 
-    Object executeQueryInternal(RequestInfo info, JdbcExecutor executor) throws SQLException {
-        ApiResponse response = driver.holder.getRequestService().applyWithRetry(executor, info, 3);
+    Object executeQueryInternal(String sql, JdbcExecutor executor) throws SQLException {
+        ApiResponse response = driver.holder.getRequestService().applyWithRetry(executor, sql, 3);
         if (response.isError()) {
             throw Exceptions.sql(response.statusCode(), response.description());
         }

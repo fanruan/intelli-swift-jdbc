@@ -1,6 +1,6 @@
 package com.fr.swift.jdbc.checker;
 
-import com.fr.swift.api.info.jdbc.SqlRequestInfo;
+import com.fr.swift.jdbc.sql.SqlBean;
 
 import java.sql.SQLException;
 
@@ -21,5 +21,5 @@ public interface GrammarChecker {
      *                      (2) paramValues are not match prepared sql's parameters
      * @see com.fr.swift.jdbc.sql.SwiftPreparedStatement.NullValue
      */
-    SqlRequestInfo check(String sql, Object... paramValues) throws SQLException;
+    SqlBean check(String sql, Object... paramValues) throws SQLException;
 }
