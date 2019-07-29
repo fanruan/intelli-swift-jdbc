@@ -42,7 +42,9 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
         if (metricBeans.isEmpty()) {
             if ((dimensionBeans.size() > 1 || dimensionBeans.get(0).getType() != DimensionType.DETAIL_ALL_COLUMN)) {
                 for (DimensionBean dimensionBean : dimensionBeans) {
-                    dimensionBean.setType(DimensionType.DETAIL);
+                    if (dimensionBean.getType() != DimensionType.DETAIL_FORMULA) {
+                        dimensionBean.setType(DimensionType.DETAIL);
+                    }
                 }
             }
             return DetailQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).build();
@@ -53,7 +55,7 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
 
     @Override
     protected DimensionBean visitToDate(SwiftSqlParser.FuncExprContext funcExprContext) {
-        DimensionBean dimensionBean = new DimensionBean(DimensionType.DETAIL_FORMULA, funcExprContext.simpleExpr(0).getText());
+        DimensionBean dimensionBean = new DimensionBean(DimensionType.DETAIL_FORMULA, SwiftSqlParseUtil.trimQuote(funcExprContext.simpleExpr(0).getText()));
         List<SwiftSqlParser.SimpleExprContext> expers = funcExprContext.simpleExpr();
         String text = SwiftSqlParseUtil.trimQuote(expers.get(0).getText());
         if (expers.size() == 1) {
