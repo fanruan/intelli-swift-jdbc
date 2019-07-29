@@ -1,5 +1,6 @@
 package com.fr.swift.jdbc.visitor.select;
 
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.visitor.BaseVisitor;
 import com.fr.swift.query.aggregator.AggregatorType;
@@ -20,21 +21,23 @@ public class FunctionVisitor extends BaseVisitor<AggregationBean> {
         SwiftSqlParser.FuncExprContext funcExprContext = (SwiftSqlParser.FuncExprContext) node;
         int type = funcExprContext.funcName().start.getType();
         AggregationBean bean = null;
+        String text = funcExprContext.simpleExpr(0).getText();
+        text = SwiftSqlParseUtil.trimQuote(text, "`");
         switch (type) {
             case SwiftSqlParser.MAX:
-                bean = MetricBean.builder(funcExprContext.simpleExpr(0).getText(), AggregatorType.MAX).build();
+                bean = MetricBean.builder(text, AggregatorType.MAX).build();
                 break;
             case SwiftSqlParser.MIN:
-                bean = MetricBean.builder(funcExprContext.simpleExpr(0).getText(), AggregatorType.MIN).build();
+                bean = MetricBean.builder(text, AggregatorType.MIN).build();
                 break;
             case SwiftSqlParser.SUM:
-                bean = MetricBean.builder(funcExprContext.simpleExpr(0).getText(), AggregatorType.SUM).build();
+                bean = MetricBean.builder(text, AggregatorType.SUM).build();
                 break;
             case SwiftSqlParser.AVG:
-                bean = MetricBean.builder(funcExprContext.simpleExpr(0).getText(), AggregatorType.AVERAGE).build();
+                bean = MetricBean.builder(text, AggregatorType.AVERAGE).build();
                 break;
             default:
-                bean = MetricBean.builder(funcExprContext.simpleExpr(0).getText(), AggregatorType.COUNT).build();
+                bean = MetricBean.builder(text, AggregatorType.COUNT).build();
                 break;
 
         }

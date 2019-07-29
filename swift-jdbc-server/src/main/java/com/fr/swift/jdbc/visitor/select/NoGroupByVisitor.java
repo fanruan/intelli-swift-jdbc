@@ -55,20 +55,21 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
     protected DimensionBean visitToDate(SwiftSqlParser.FuncExprContext funcExprContext) {
         DimensionBean dimensionBean = new DimensionBean(DimensionType.DETAIL_FORMULA, funcExprContext.simpleExpr(0).getText());
         List<SwiftSqlParser.SimpleExprContext> expers = funcExprContext.simpleExpr();
+        String text = SwiftSqlParseUtil.trimQuote(expers.get(0).getText(), "`");
         if (expers.size() == 1) {
             try {
-                long time = Long.parseLong(expers.get(0).getText());
+                long time = Long.parseLong(text);
                 dimensionBean.setFormula(new ToDateFormulaBean(funcExprContext.getText(), time));
             } catch (Exception e) {
-                dimensionBean.setFormula(new ToDateFormulaBean(funcExprContext.getText(), expers.get(0).getText()));
+                dimensionBean.setFormula(new ToDateFormulaBean(funcExprContext.getText(), text));
             }
         } else {
             String format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), "'");
             try {
-                long time = Long.parseLong(expers.get(0).getText());
+                long time = Long.parseLong(text);
                 dimensionBean.setFormula(new ToDateFormatFormulaBean(funcExprContext.getText(), time, format));
             } catch (Exception e) {
-                dimensionBean.setFormula(new ToDateFormatFormulaBean(funcExprContext.getText(), expers.get(0).getText(), format));
+                dimensionBean.setFormula(new ToDateFormatFormulaBean(funcExprContext.getText(), text, format));
             }
         }
         dimensionBean.setAlias(funcExprContext.getText());
