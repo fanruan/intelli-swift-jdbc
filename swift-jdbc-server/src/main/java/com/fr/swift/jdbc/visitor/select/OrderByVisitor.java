@@ -1,6 +1,7 @@
-package com.fr.swift.jdbc.visitor;
+package com.fr.swift.jdbc.visitor.select;
 
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
+import com.fr.swift.jdbc.visitor.BaseVisitor;
 import com.fr.swift.query.info.bean.element.SortBean;
 import com.fr.swift.query.sort.SortType;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -15,7 +16,7 @@ import java.util.List;
  * @author yee
  * @date 2019-07-19
  */
-public class OrderByVisitor extends AbstractParseTreeVisitor<List<SortBean>> {
+public class OrderByVisitor extends BaseVisitor<List<SortBean>> {
     @Override
     public List<SortBean> visitChildren(RuleNode node) {
         SwiftSqlParser.OrderByContext order = (SwiftSqlParser.OrderByContext) node;

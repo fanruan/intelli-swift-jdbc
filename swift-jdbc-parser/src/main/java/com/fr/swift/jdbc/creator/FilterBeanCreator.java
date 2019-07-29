@@ -15,11 +15,4 @@ public interface FilterBeanCreator<T extends FilterBean> {
      * @return
      */
     T create(String column, Object value);
-
-    /**
-     * 关键字类型 Between的时候用
-     *
-     * @return
-     */
-    int type();
 }

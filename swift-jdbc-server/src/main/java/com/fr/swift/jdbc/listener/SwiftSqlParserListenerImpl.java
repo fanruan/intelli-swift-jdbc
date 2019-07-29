@@ -8,9 +8,12 @@ import com.fr.swift.jdbc.adaptor.bean.TruncateBean;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParserBaseListener;
 import com.fr.swift.jdbc.listener.handler.SwiftSqlBeanHandler;
-import com.fr.swift.jdbc.visitor.DataTypeVisitor;
-import com.fr.swift.jdbc.visitor.WhereVisitor;
+import com.fr.swift.jdbc.visitor.create.DataTypeVisitor;
+import com.fr.swift.jdbc.visitor.where.BoolExprVisitor;
+import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
+import com.fr.swift.query.info.bean.element.filter.impl.ComplexFilterInfoBean;
 import com.fr.swift.util.Strings;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +103,14 @@ public class SwiftSqlParserListenerImpl extends SwiftSqlParserBaseListener {
         DeletionBean deletionBean = new DeletionBean();
         deletionBean.setTableName(tableName);
         if (null != ctx.where) {
-            deletionBean.setFilter(ctx.where.accept(new WhereVisitor()));
+            List<FilterInfoBean> filters = new ArrayList<>();
+            for (ParseTree c : ctx.where.children) {
+                FilterInfoBean accept = c.accept(new BoolExprVisitor());
+                if (null != accept) {
+                    filters.add(accept);
+                }
+            }
+            deletionBean.setFilter(filters.size() == 1 ? filters.get(0) : ComplexFilterInfoBean.and(filters));
         }
         handler.handle(deletionBean);
     }

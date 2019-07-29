@@ -88,7 +88,7 @@ public class SwiftSqlParserListenerImplTest {
 
     @Test
     public void selectAs() {
-        String select = "select city, sum(price) as sumPrice from tbl_name";
+        String select = "select city, sum(price) as sumPrice from tbl_name order by id, price desc";
         assertTrue(SwiftSqlParseUtil.isSelect(select));
         SwiftSqlBeanHandler mock = Mockito.mock(SwiftSqlBeanHandler.class);
         Mockito.doAnswer(new Answer() {

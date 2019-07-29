@@ -56,7 +56,7 @@ public final class JdbcProperty {
                     "jdbc:swift",
                     10,
                     1,
-                    3000,
+                    30000,
                     200,
                     false
             );
