@@ -1,5 +1,6 @@
 package com.fr.swift.jdbc.visitor.select;
 
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.visitor.BaseVisitor;
 import com.fr.swift.query.info.bean.element.AggregationBean;
@@ -55,8 +56,8 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
                             visitErrorNode(new ErrorNodeImpl(((SwiftSqlParser.SimpleExprContext) child).start));
                             break;
                         default:
-                            String alias = child.getText();
-                            dimensionBeans.add(new DimensionBean(DimensionType.GROUP, child.getText(), rename(nameMap, alias)));
+                            String alias = SwiftSqlParseUtil.trimQuote(child.getText());
+                            dimensionBeans.add(new DimensionBean(DimensionType.GROUP, alias, rename(nameMap, alias)));
                     }
                     dimension = true;
                 }
@@ -70,7 +71,7 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
                 }
             } else if (child instanceof SwiftSqlParser.NameContext) {
                 if (null != aliasAggregation) {
-                    String alias = child.getText();
+                    String alias = SwiftSqlParseUtil.trimQuote(child.getText());
                     aliasAggregation.setAlias(rename(nameMap, alias));
                     aliasAggregation = null;
                 }

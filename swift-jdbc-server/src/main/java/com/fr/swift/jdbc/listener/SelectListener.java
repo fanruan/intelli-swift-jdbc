@@ -44,7 +44,7 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
             // distinct 只能跟在select 后面   第0号是select  第1号是distinct
             ParseTree child = ctx.getChild(1);
             boolean distinct = child instanceof TerminalNode && ((TerminalNode) child).getSymbol().getType() == SwiftSqlParser.DISTINCT;
-            String tableName = SwiftSqlParseUtil.trimQuote(ctx.table.getText(), "`");
+            String tableName = SwiftSqlParseUtil.trimQuote(ctx.table.getText());
             FilterInfoBean filter = null;
             if (ctx.where != null) {
                 List<FilterInfoBean> filters = new ArrayList<>();

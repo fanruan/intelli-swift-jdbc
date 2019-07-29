@@ -49,11 +49,11 @@ class FilterFuncValueVisitor extends BaseVisitor {
         switch (funcExprContext.start.getType()) {
             case SwiftSqlParser.TODATE:
                 List<SwiftSqlParser.SimpleExprContext> expers = funcExprContext.simpleExpr();
-                String value = SwiftSqlParseUtil.trimQuote(expers.get(0).getText(), "'");
+                String value = SwiftSqlParseUtil.trimQuote(expers.get(0).getText(), SwiftSqlParseUtil.SINGLE_QUOTE);
                 SimpleDateFormat sdf = null;
                 String format;
                 if (expers.size() > 1) {
-                    format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), "'");
+                    format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), SwiftSqlParseUtil.SINGLE_QUOTE);
                     if (!this.formatMap.containsKey(format)) {
                         visitErrorNode(new ErrorNodeImpl(expers.get(1).start));
                     }
@@ -82,7 +82,7 @@ class FilterFuncValueVisitor extends BaseVisitor {
                 }
             default:
                 // TODO 其他方法的过滤暂时不支持
-                return SwiftSqlParseUtil.trimQuote(node.getText(), "'");
+                return SwiftSqlParseUtil.trimQuote(node.getText(), SwiftSqlParseUtil.SINGLE_QUOTE);
         }
     }
 }

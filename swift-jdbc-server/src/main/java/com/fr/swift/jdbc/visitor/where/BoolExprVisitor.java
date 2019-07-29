@@ -37,7 +37,7 @@ public class BoolExprVisitor extends BaseVisitor<FilterInfoBean> {
     }
 
     private FilterInfoBean visitKeywordBoolExprContext(SwiftSqlParser.KeywordBoolExprContext boolExpr) {
-        String columnName = SwiftSqlParseUtil.trimQuote(boolExpr.simpleExpr().getText(), "`");
+        String columnName = SwiftSqlParseUtil.trimQuote(boolExpr.simpleExpr().getText());
         FilterInfoBean filter = null;
         TerminalNode in = boolExpr.IN();
         TerminalNode aNull = boolExpr.NULL();
@@ -74,11 +74,11 @@ public class BoolExprVisitor extends BaseVisitor<FilterInfoBean> {
             if (null == creator) {
                 return visitErrorNode(new ErrorNodeImpl(boolExpr.getStart()));
             }
-            String column = SwiftSqlParseUtil.trimQuote(exprColumn.getText(), "`");
+            String column = SwiftSqlParseUtil.trimQuote(exprColumn.getText());
             SwiftSqlParser.FuncExprContext valueFunc = exprValue.funcExpr();
             Object value = null != valueFunc ?
                     valueFunc.accept(new FilterFuncValueVisitor(exprOp.start.getType()))
-                    : SwiftSqlParseUtil.trimQuote(exprValue.getText(), "'");
+                    : SwiftSqlParseUtil.trimQuote(exprValue.getText(), SwiftSqlParseUtil.SINGLE_QUOTE);
             return creator.create(column, value);
         } else {
             List<FilterInfoBean> list = new ArrayList<>();

@@ -24,7 +24,7 @@ public class InsertValueVisitor extends BaseVisitor<Row> {
             if (valueContext.start.getType() == SwiftSqlParser.NUMERIC_LITERAL) {
                 data.add(Double.parseDouble(text));
             } else {
-                data.add(SwiftSqlParseUtil.trimQuote(text, "'"));
+                data.add(SwiftSqlParseUtil.trimQuote(text, SwiftSqlParseUtil.SINGLE_QUOTE));
             }
         }
         return new ListBasedRow(data);

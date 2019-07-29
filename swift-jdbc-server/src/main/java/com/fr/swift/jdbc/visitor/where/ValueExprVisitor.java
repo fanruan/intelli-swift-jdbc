@@ -27,7 +27,7 @@ public class ValueExprVisitor extends BaseVisitor<Set<String>> {
                 return Collections.singleton(((SwiftSqlParser.ValueContext) node).NUMERIC_LITERAL().getText());
             }
             TerminalNode terminalNode = ((SwiftSqlParser.ValueContext) node).STRING_LITERAL();
-            String value = SwiftSqlParseUtil.trimQuote(terminalNode.getText(), "'");
+            String value = SwiftSqlParseUtil.trimQuote(terminalNode.getText(), SwiftSqlParseUtil.SINGLE_QUOTE);
             return Collections.singleton(value);
         }
         return set;
