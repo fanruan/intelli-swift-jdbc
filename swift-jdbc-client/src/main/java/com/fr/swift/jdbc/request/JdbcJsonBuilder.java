@@ -14,14 +14,14 @@ public class JdbcJsonBuilder {
         return "{\"requestId\": \"" +
                 requestId +
                 "\", \"requestType\": \"SQL\", \"sql\": \"" + sql + "\",\"database\": \"" +
-                database + "\", \"auth\": \"" + authCode + "\"";
+                database + "\", \"auth\": \"" + authCode + "\"}";
     }
 
     public static String buildAuthJson(String username, String password, String fromAddress) {
         return "{\"requestId\": \"" +
                 UUID.randomUUID().toString() +
                 "\", \"requestType\": \"AUTH\", \"swiftUser\": \"" + username + "\",\"swiftPassword\": \"" +
-                password + "\", \"from\": \"" + fromAddress + "\"";
+                password + "\", \"from\": \"" + fromAddress + "\"}";
     }
 
 }
