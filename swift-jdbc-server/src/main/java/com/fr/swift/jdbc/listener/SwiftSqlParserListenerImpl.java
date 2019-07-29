@@ -72,14 +72,14 @@ public class SwiftSqlParserListenerImpl extends SwiftSqlParserBaseListener {
     @Override
     public void enterCreateTable(SwiftSqlParser.CreateTableContext ctx) {
         CreationBean creationBean = new CreationBean();
-        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText(), "`");
+        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText());
         creationBean.setTableName(tableName);
         SwiftSqlParser.ColumnDefinitionsContext definition = ctx.columnDefinitions();
         List<SwiftSqlParser.NameContext> columnsName = definition.name();
         ArrayList<ColumnBean> fields = new ArrayList<>();
         for (int i = 0; i < columnsName.size(); i++) {
             SwiftSqlParser.ColumnDefinitionContext d = definition.columnDefinition(i);
-            String columnName = SwiftSqlParseUtil.trimQuote(columnsName.get(i).getText(), "`");
+            String columnName = SwiftSqlParseUtil.trimQuote(columnsName.get(i).getText());
             ColumnBean column = new ColumnBean();
             column.setColumnName(columnName);
             SwiftSqlParser.DataTypeContext dataType = d.dataType();
@@ -92,7 +92,7 @@ public class SwiftSqlParserListenerImpl extends SwiftSqlParserBaseListener {
 
     @Override
     public void enterDropTable(SwiftSqlParser.DropTableContext ctx) {
-        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText(), "`");
+        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText());
         DropBean dropBean = new DropBean();
         dropBean.setTableName(tableName);
         handler.handle(dropBean);
@@ -100,7 +100,7 @@ public class SwiftSqlParserListenerImpl extends SwiftSqlParserBaseListener {
 
     @Override
     public void enterDelete(SwiftSqlParser.DeleteContext ctx) {
-        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText(), "`");
+        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText());
         DeletionBean deletionBean = new DeletionBean();
         deletionBean.setTableName(tableName);
         if (null != ctx.where) {
@@ -118,7 +118,7 @@ public class SwiftSqlParserListenerImpl extends SwiftSqlParserBaseListener {
 
     @Override
     public void enterTruncate(SwiftSqlParser.TruncateContext ctx) {
-        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText(), "`");
+        String tableName = SwiftSqlParseUtil.trimQuote(ctx.name().getText());
         TruncateBean truncateBean = new TruncateBean(Strings.EMPTY, tableName);
         handler.handle(truncateBean);
     }

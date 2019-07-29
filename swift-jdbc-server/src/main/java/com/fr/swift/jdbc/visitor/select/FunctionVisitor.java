@@ -22,7 +22,7 @@ public class FunctionVisitor extends BaseVisitor<AggregationBean> {
         int type = funcExprContext.funcName().start.getType();
         AggregationBean bean = null;
         String text = funcExprContext.simpleExpr(0).getText();
-        text = SwiftSqlParseUtil.trimQuote(text, "`");
+        text = SwiftSqlParseUtil.trimQuote(text);
         switch (type) {
             case SwiftSqlParser.MAX:
                 bean = MetricBean.builder(text, AggregatorType.MAX).build();

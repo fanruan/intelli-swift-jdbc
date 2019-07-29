@@ -55,7 +55,7 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
     protected DimensionBean visitToDate(SwiftSqlParser.FuncExprContext funcExprContext) {
         DimensionBean dimensionBean = new DimensionBean(DimensionType.DETAIL_FORMULA, funcExprContext.simpleExpr(0).getText());
         List<SwiftSqlParser.SimpleExprContext> expers = funcExprContext.simpleExpr();
-        String text = SwiftSqlParseUtil.trimQuote(expers.get(0).getText(), "`");
+        String text = SwiftSqlParseUtil.trimQuote(expers.get(0).getText());
         if (expers.size() == 1) {
             try {
                 long time = Long.parseLong(text);
@@ -64,7 +64,7 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
                 dimensionBean.setFormula(new ToDateFormulaBean(funcExprContext.getText(), text));
             }
         } else {
-            String format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), "'");
+            String format = SwiftSqlParseUtil.trimQuote(expers.get(1).getText(), SwiftSqlParseUtil.SINGLE_QUOTE);
             try {
                 long time = Long.parseLong(text);
                 dimensionBean.setFormula(new ToDateFormatFormulaBean(funcExprContext.getText(), time, format));

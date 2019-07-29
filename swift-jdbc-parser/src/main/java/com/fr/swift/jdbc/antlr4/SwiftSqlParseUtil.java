@@ -13,6 +13,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
  * @date 2019-07-20
  */
 public class SwiftSqlParseUtil {
+    public static final String SINGLE_QUOTE = "'";
+    private static final String QUOTE = "`";
     public static void parse(String sql, SwiftSqlParserBaseListener listener) {
         SwiftSqlParser parser = getSwiftSqlParser(sql);
         ParseTreeWalker.DEFAULT.walk(listener, parser.root());
@@ -56,5 +58,9 @@ public class SwiftSqlParseUtil {
             return value.substring(1, value.length() - 1);
         }
         return value;
+    }
+
+    public static String trimQuote(String value) {
+        return trimQuote(value, QUOTE);
     }
 }

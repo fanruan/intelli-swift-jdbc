@@ -56,7 +56,7 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
                             visitErrorNode(new ErrorNodeImpl(((SwiftSqlParser.SimpleExprContext) child).start));
                             break;
                         default:
-                            String alias = SwiftSqlParseUtil.trimQuote(child.getText(), "`");
+                            String alias = SwiftSqlParseUtil.trimQuote(child.getText());
                             dimensionBeans.add(new DimensionBean(DimensionType.GROUP, alias, rename(nameMap, alias)));
                     }
                     dimension = true;
@@ -71,7 +71,7 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
                 }
             } else if (child instanceof SwiftSqlParser.NameContext) {
                 if (null != aliasAggregation) {
-                    String alias = SwiftSqlParseUtil.trimQuote(child.getText(), "`");
+                    String alias = SwiftSqlParseUtil.trimQuote(child.getText());
                     aliasAggregation.setAlias(rename(nameMap, alias));
                     aliasAggregation = null;
                 }
