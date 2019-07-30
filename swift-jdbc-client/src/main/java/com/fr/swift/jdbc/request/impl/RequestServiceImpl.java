@@ -1,10 +1,7 @@
 package com.fr.swift.jdbc.request.impl;
 
-import com.fr.swift.api.info.AuthRequestInfo;
-import com.fr.swift.api.info.RequestInfo;
 import com.fr.swift.api.server.ApiServerService;
 import com.fr.swift.api.server.response.ApiResponse;
-import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.jdbc.request.JdbcRequestService;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
@@ -20,17 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class RequestServiceImpl implements JdbcRequestService {
     @Override
     public ApiResponse apply(JdbcExecutor sender, String user, String password) {
-        return apply(sender, new AuthRequestInfo(user, password));
-    }
-
-    @Override
-    public ApiResponse apply(JdbcExecutor sender, RequestInfo sql) {
-        try {
-            String json = JdbcJsonBuilder.build(sql);
-            return apply(sender, json);
-        } catch (Exception e) {
-            throw Exceptions.runtime("Build Json Exception", e);
-        }
+        return apply(sender, JdbcJsonBuilder.buildAuthJson(user, password, ""));
     }
 
     @Override
@@ -42,18 +29,9 @@ public class RequestServiceImpl implements JdbcRequestService {
 
     @Override
     public ApiResponse applyWithRetry(JdbcExecutor sender, String user, String password, int retryTime) {
-        return applyWithRetry(sender, new AuthRequestInfo(user, password), retryTime);
+        return applyWithRetry(sender, JdbcJsonBuilder.buildAuthJson(user, password, ""), retryTime);
     }
 
-    @Override
-    public ApiResponse applyWithRetry(JdbcExecutor sender, RequestInfo sql, int retryTime) {
-        try {
-            String json = JdbcJsonBuilder.build(sql);
-            return applyWithRetry(sender, json, retryTime);
-        } catch (Exception e) {
-            throw Exceptions.runtime("Build Json Exception", e);
-        }
-    }
 
     @Override
     @SuppressWarnings("unchecked")

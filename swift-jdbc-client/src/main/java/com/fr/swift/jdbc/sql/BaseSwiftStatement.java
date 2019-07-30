@@ -1,7 +1,7 @@
 package com.fr.swift.jdbc.sql;
 
-import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.jdbc.checker.GrammarChecker;
+import com.fr.swift.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 
 import java.sql.SQLException;
@@ -19,9 +19,10 @@ public abstract class BaseSwiftStatement implements SwiftStatement {
         this.grammarChecker = connection.getConfig().grammarChecker();
     }
 
-    <T> T execute(SqlRequestInfo info, JdbcExecutor executor) throws SQLException {
-        info.setDatabase(connection.getConfig().swiftDatabase());
-        info.setAuthCode(connection.driver.holder.getAuthCode());
-        return (T) connection.executeQueryInternal(info, executor);
+    <T> T execute(String sql, String requestId, JdbcExecutor executor) throws SQLException {
+        String newSql = JdbcJsonBuilder.buildSqlJson(sql, requestId, connection.getConfig().swiftDatabase(), connection.driver.holder.getAuthCode());
+        return (T) connection.executeQueryInternal(newSql, executor);
     }
+
+
 }

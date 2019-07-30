@@ -7,13 +7,14 @@ import com.fr.swift.jdbc.result.ResultSetWrapper;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.source.ListBasedRow;
 import com.fr.swift.source.Row;
+import com.fr.swift.structure.Pair;
 import com.fr.swift.util.ReflectUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -41,13 +42,15 @@ public class SwiftStatementImpl extends BaseSwiftStatement {
      */
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
-        SqlRequestInfo info = grammarChecker.check(sql);
+        SqlBean info = grammarChecker.check(sql);
+        String requestId = UUID.randomUUID().toString();
+        String newSql = info.getSql();
         if (info.isSelect()) {
-            SwiftApiResultSet<SqlRequestInfo> result = execute(info, queryExecutor);
-            return new ResultSetWrapper(new JdbcSwiftResultSet(info, result, this), result.getLabel2Index());
+            SwiftApiResultSet<SqlRequestInfo> result = execute(newSql, requestId, queryExecutor);
+            return new ResultSetWrapper(new JdbcSwiftResultSet(Pair.of(newSql, requestId), result, this), result.getLabel2Index());
         } else {
-            int result = executeUpdate(sql);
-            return new MaintainResultSet(Arrays.<Row>asList(new ListBasedRow(result)).iterator(), Arrays.asList("affects"));
+            int result = executeUpdate(newSql);
+            return new MaintainResultSet(Collections.<Row>singletonList(new ListBasedRow(result)).iterator(), Collections.singletonList("affects"));
         }
     }
 
@@ -62,16 +65,17 @@ public class SwiftStatementImpl extends BaseSwiftStatement {
      */
     @Override
     public int executeUpdate(String sql) throws SQLException {
-        SqlRequestInfo info = grammarChecker.check(sql);
+        SqlBean info = grammarChecker.check(sql);
         return executeUpdate(info);
     }
 
-    int executeUpdate(SqlRequestInfo info) throws SQLException {
+    int executeUpdate(SqlBean info) throws SQLException {
+        String requestId = UUID.randomUUID().toString();
         if (info.isSelect()) {
-            SwiftApiResultSet<SqlRequestInfo> result = execute(info, queryExecutor);
+            SwiftApiResultSet<SqlRequestInfo> result = execute(info.getSql(), requestId, queryExecutor);
             return result.getRowCount();
         }
-        Object obj = execute(info, maintainExecutor);
+        Object obj = execute(info.getSql(), requestId, maintainExecutor);
         try {
             return ReflectUtils.parseNumber(obj).intValue();
         } catch (Exception e) {
