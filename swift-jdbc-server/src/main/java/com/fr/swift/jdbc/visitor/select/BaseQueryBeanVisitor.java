@@ -76,7 +76,7 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
                     aliasAggregation = null;
                 }
                 if (null != aliasDimension) {
-                    String alias = child.getText();
+                    String alias = SwiftSqlParseUtil.trimQuote(child.getText());
                     aliasDimension.setAlias(rename(nameMap, alias));
                     aliasDimension = null;
                 }
