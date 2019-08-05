@@ -49,7 +49,7 @@ public class SimpleExecutor implements JdbcExecutor {
             condition.await(timeout, TimeUnit.MILLISECONDS);
             SwiftResponse response = sync.getResponse();
             if (response == null) {
-                throw Exceptions.timeout("null rpc response");
+                throw Exceptions.timeout("connection timeout");
             }
             rpcCache.remove(sync.getRpcId());
             if (response.getException() != null) {
