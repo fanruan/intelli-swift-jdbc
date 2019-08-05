@@ -1,11 +1,18 @@
 package com.fr.swift.jdbc.listener;
 
+import com.fr.swift.SwiftContext;
+import com.fr.swift.config.service.SwiftMetaDataService;
+import com.fr.swift.exception.meta.SwiftMetaDataException;
 import com.fr.swift.jdbc.adaptor.InsertionBeanParser;
 import com.fr.swift.jdbc.adaptor.bean.InsertionBean;
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParserBaseListener;
 import com.fr.swift.jdbc.visitor.insert.InsertValueVisitor;
 import com.fr.swift.source.Row;
+import com.fr.swift.source.SwiftMetaData;
+import com.fr.swift.source.SwiftMetaDataColumn;
+import org.antlr.v4.runtime.tree.ErrorNodeImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +23,34 @@ import java.util.List;
  */
 public class InsertListener extends SwiftSqlParserBaseListener implements InsertionBeanParser {
     private InsertionBean insertionBean;
+    private SwiftMetaDataService metaDataService = SwiftContext.get().getBean(SwiftMetaDataService.class);
 
     @Override
     public void enterInsert(SwiftSqlParser.InsertContext ctx) {
         List<Row> rows = new ArrayList<>();
-        InsertValueVisitor visitor = new InsertValueVisitor();
-        for (SwiftSqlParser.ValuesContext value : ctx.values()) {
-            rows.add(value.accept(visitor));
-        }
         String tableName = ctx.name().getText();
         List<String> fields = new ArrayList<>();
-        if (ctx.columnNames != null) {
-            for (SwiftSqlParser.NameContext nameContext : ctx.columnNames.name()) {
-                fields.add(nameContext.getText());
+        List<SwiftMetaDataColumn> metaDataColumns = new ArrayList<>();
+        SwiftMetaData metaData = metaDataService.getMetaDataByKey(tableName);
+        try {
+            if (ctx.columnNames != null) {
+                for (SwiftSqlParser.NameContext nameContext : ctx.columnNames.name()) {
+
+                    String column = SwiftSqlParseUtil.trimQuote(nameContext.getText());
+                    metaDataColumns.add(metaData.getColumn(column));
+                    fields.add(column);
+                }
+            } else {
+                for (int i = 0; i < metaData.getColumnCount(); i++) {
+                    metaDataColumns.add(metaData.getColumn(i + 1));
+                }
             }
+        } catch (SwiftMetaDataException e) {
+            visitErrorNode(new ErrorNodeImpl(null != ctx.columnNames ? ctx.columnNames.start : ctx.start));
+        }
+        InsertValueVisitor visitor = new InsertValueVisitor(metaDataColumns);
+        for (SwiftSqlParser.ValuesContext value : ctx.values()) {
+            rows.add(value.accept(visitor));
         }
         insertionBean = new InsertionBean();
         insertionBean.setFields(fields);

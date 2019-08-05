@@ -17,5 +17,6 @@ INSERT INTO a (c2, c3, c4, c5) VALUES (1., 'string', NULL, 0);
 INSERT INTO a VALUES (1., 'string', NULL, 0),(1., 'string', NULL, 0);
 
 DELETE FROM a WHERE c2 LIKE '%as%' OR c3 BETWEEN 10 AND 100;
+DELETE FROM a;
 
 TRUNCATE a;
