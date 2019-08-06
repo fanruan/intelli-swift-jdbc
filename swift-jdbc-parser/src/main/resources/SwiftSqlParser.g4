@@ -57,7 +57,7 @@ insert:
     VALUES
     L_PAR values R_PAR (COMMA L_PAR values R_PAR)*?;
 
-delete: DELETE FROM table=name WHERE where=expr;
+delete: DELETE FROM table=name (WHERE where=expr)?;
 
 truncate: TRUNCATE table=name;
 

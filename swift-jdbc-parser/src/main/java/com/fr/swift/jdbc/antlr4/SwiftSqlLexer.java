@@ -1,4 +1,4 @@
-// Generated from D:\workspace\swift-public/target/classes/SwiftSqlLexer.g4 by ANTLR 4.5.3
+// Generated from /Users/yee/work/swift-merge/swift-project/target/main/SwiftSqlLexer.g4 by ANTLR 4.5.3
 package com.fr.swift.jdbc.antlr4;
 
 import org.antlr.v4.runtime.CharStream;
@@ -14,6 +14,19 @@ import org.antlr.v4.runtime.dfa.DFA;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class SwiftSqlLexer extends Lexer {
+    protected static final DFA[] _decisionToDFA;
+    protected static final PredictionContextCache _sharedContextCache =
+            new PredictionContextCache();
+    private static final String[] _LITERAL_NAMES = {
+            null, null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null, null, null,
+            "'*'", "'/'", "'%'", "'+'", "'-'", "'='", "'>'", "'<'", "'>='", "'<='",
+            "'!='", "'!'", "'~'", "'|'", "'&'", "'^'", "'.'", "'('", "')'", "','",
+            "';'", "'@'", "'''", "'\"'", "'`'", "':'"
+    };
     public static final int
             SELECT = 1, DISTINCT = 2, AS = 3, FROM = 4, WHERE = 5, GROUP = 6, BY = 7, HAVING = 8,
             ORDER = 9, ASC = 10, DESC = 11, LIMIT = 12, INSERT = 13, INTO = 14, VALUES = 15, DELETE = 16,
@@ -28,6 +41,21 @@ public class SwiftSqlLexer extends Lexer {
             L_PAR = 77, R_PAR = 78, COMMA = 79, SEMI = 80, AT = 81, SINGLE_QUOTE = 82, DOUBLE_QUOTE = 83,
             REVERSE_QUOTE = 84, COLON = 85, IDENTIFIER = 86, NUMERIC_LITERAL = 87, STRING_LITERAL = 88,
             DIGIT = 89, WS = 90;
+    private static final String[] _SYMBOLIC_NAMES = {
+            null, "SELECT", "DISTINCT", "AS", "FROM", "WHERE", "GROUP", "BY", "HAVING",
+            "ORDER", "ASC", "DESC", "LIMIT", "INSERT", "INTO", "VALUES", "DELETE",
+            "TRUNCATE", "CREATE", "TABLE", "NULL", "PARTITION", "BIT", "TINYINT",
+            "SMALLINT", "INTEGER", "BIGINT", "FLOAT", "REAL", "DOUBLE", "NUMERIC",
+            "DECIMAL", "CHAR", "VARCHAR", "LONGVARCHAR", "DATE", "TIME", "TIMESTAMP",
+            "BOOLEAN", "DROP", "ALTER", "ADD", "COLUMN", "MAX", "MIN", "SUM", "AVG",
+            "COUNT", "MID", "TODATE", "NOT", "IN", "BETWEEN", "AND", "OR", "LIKE",
+            "IS", "LINE", "HASH", "RANGE", "MUL", "DIV", "MOD", "PLUS", "MINUS", "EQ",
+            "GREATER", "LESS", "GEQ", "LEQ", "NEQ", "EXCLAMATION", "BIT_NOT", "BIT_OR",
+            "BIT_AND", "BIT_XOR", "DOT", "L_PAR", "R_PAR", "COMMA", "SEMI", "AT",
+            "SINGLE_QUOTE", "DOUBLE_QUOTE", "REVERSE_QUOTE", "COLON", "IDENTIFIER",
+            "NUMERIC_LITERAL", "STRING_LITERAL", "DIGIT", "WS"
+    };
+
     public static final String[] ruleNames = {
             "SELECT", "DISTINCT", "AS", "FROM", "WHERE", "GROUP", "BY", "HAVING",
             "ORDER", "ASC", "DESC", "LIMIT", "INSERT", "INTO", "VALUES", "DELETE",
@@ -44,11 +72,77 @@ public class SwiftSqlLexer extends Lexer {
             "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
             "T", "U", "V", "W", "X", "Y", "Z", "WS"
     };
+    public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+    public static String[] modeNames = {
+            "DEFAULT_MODE"
+    };
+
+    static {
+        RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION);
+    }
+
     /**
      * @deprecated Use {@link #VOCABULARY} instead.
      */
     @Deprecated
     public static final String[] tokenNames;
+
+    static {
+        tokenNames = new String[_SYMBOLIC_NAMES.length];
+        for (int i = 0; i < tokenNames.length; i++) {
+            tokenNames[i] = VOCABULARY.getLiteralName(i);
+            if (tokenNames[i] == null) {
+                tokenNames[i] = VOCABULARY.getSymbolicName(i);
+            }
+
+            if (tokenNames[i] == null) {
+                tokenNames[i] = "<INVALID>";
+            }
+        }
+    }
+
+    public SwiftSqlLexer(CharStream input) {
+        super(input);
+        _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+    }
+
+    @Override
+    @Deprecated
+    public String[] getTokenNames() {
+        return tokenNames;
+    }
+
+    @Override
+
+    public Vocabulary getVocabulary() {
+        return VOCABULARY;
+    }
+
+    @Override
+    public String getGrammarFileName() {
+        return "SwiftSqlLexer.g4";
+    }
+
+    @Override
+    public String[] getRuleNames() {
+        return ruleNames;
+    }
+
+    @Override
+    public String getSerializedATN() {
+        return _serializedATN;
+    }
+
+    @Override
+    public String[] getModeNames() {
+        return modeNames;
+    }
+
+    @Override
+    public ATN getATN() {
+        return _ATN;
+    }
+
     public static final String _serializedATN =
             "\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\2\\\u031d\b\1\4\2\t" +
                     "\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13" +
@@ -335,102 +429,11 @@ public class SwiftSqlLexer extends Lexer {
                     "\3\b\2\2";
     public static final ATN _ATN =
             new ATNDeserializer().deserialize(_serializedATN.toCharArray());
-    protected static final DFA[] _decisionToDFA;
-    protected static final PredictionContextCache _sharedContextCache =
-            new PredictionContextCache();
-    private static final String[] _LITERAL_NAMES = {
-            null, null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null,
-            "'*'", "'/'", "'%'", "'+'", "'-'", "'='", "'>'", "'<'", "'>='", "'<='",
-            "'!='", "'!'", "'~'", "'|'", "'&'", "'^'", "'.'", "'('", "')'", "','",
-            "';'", "'@'", "'''", "'\"'", "'`'", "':'"
-    };
-    private static final String[] _SYMBOLIC_NAMES = {
-            null, "SELECT", "DISTINCT", "AS", "FROM", "WHERE", "GROUP", "BY", "HAVING",
-            "ORDER", "ASC", "DESC", "LIMIT", "INSERT", "INTO", "VALUES", "DELETE",
-            "TRUNCATE", "CREATE", "TABLE", "NULL", "PARTITION", "BIT", "TINYINT",
-            "SMALLINT", "INTEGER", "BIGINT", "FLOAT", "REAL", "DOUBLE", "NUMERIC",
-            "DECIMAL", "CHAR", "VARCHAR", "LONGVARCHAR", "DATE", "TIME", "TIMESTAMP",
-            "BOOLEAN", "DROP", "ALTER", "ADD", "COLUMN", "MAX", "MIN", "SUM", "AVG",
-            "COUNT", "MID", "TODATE", "NOT", "IN", "BETWEEN", "AND", "OR", "LIKE",
-            "IS", "LINE", "HASH", "RANGE", "MUL", "DIV", "MOD", "PLUS", "MINUS", "EQ",
-            "GREATER", "LESS", "GEQ", "LEQ", "NEQ", "EXCLAMATION", "BIT_NOT", "BIT_OR",
-            "BIT_AND", "BIT_XOR", "DOT", "L_PAR", "R_PAR", "COMMA", "SEMI", "AT",
-            "SINGLE_QUOTE", "DOUBLE_QUOTE", "REVERSE_QUOTE", "COLON", "IDENTIFIER",
-            "NUMERIC_LITERAL", "STRING_LITERAL", "DIGIT", "WS"
-    };
-    public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
-    public static String[] modeNames = {
-            "DEFAULT_MODE"
-    };
-
-    static {
-        RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION);
-    }
-
-    static {
-        tokenNames = new String[_SYMBOLIC_NAMES.length];
-        for (int i = 0; i < tokenNames.length; i++) {
-            tokenNames[i] = VOCABULARY.getLiteralName(i);
-            if (tokenNames[i] == null) {
-                tokenNames[i] = VOCABULARY.getSymbolicName(i);
-            }
-
-            if (tokenNames[i] == null) {
-                tokenNames[i] = "<INVALID>";
-            }
-        }
-    }
 
     static {
         _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
         for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
             _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
         }
-    }
-
-    public SwiftSqlLexer(CharStream input) {
-        super(input);
-        _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
-    }
-
-    @Override
-    @Deprecated
-    public String[] getTokenNames() {
-        return tokenNames;
-    }
-
-    @Override
-
-    public Vocabulary getVocabulary() {
-        return VOCABULARY;
-    }
-
-    @Override
-    public String getGrammarFileName() {
-        return "SwiftSqlLexer.g4";
-    }
-
-    @Override
-    public String[] getRuleNames() {
-        return ruleNames;
-    }
-
-    @Override
-    public String getSerializedATN() {
-        return _serializedATN;
-    }
-
-    @Override
-    public String[] getModeNames() {
-        return modeNames;
-    }
-
-    @Override
-    public ATN getATN() {
-        return _ATN;
     }
 }

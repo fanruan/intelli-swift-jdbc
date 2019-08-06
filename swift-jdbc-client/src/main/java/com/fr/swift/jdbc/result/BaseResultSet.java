@@ -104,16 +104,28 @@ public abstract class BaseResultSet implements ResultSet {
 
     @Override
     public Date getDate(int columnIndex) throws SQLException {
+        Object object = getObject(columnIndex);
+        if (object instanceof java.util.Date) {
+            return new Date(((Date) object).getTime());
+        }
         return new Date(getNumber(columnIndex).longValue());
     }
 
     @Override
     public Time getTime(int columnIndex) throws SQLException {
+        Object object = getObject(columnIndex);
+        if (object instanceof java.util.Date) {
+            return new Time(((Date) object).getTime());
+        }
         return new Time(getNumber(columnIndex).longValue());
     }
 
     @Override
     public Timestamp getTimestamp(int columnIndex) throws SQLException {
+        Object object = getObject(columnIndex);
+        if (object instanceof java.util.Date) {
+            return new Timestamp(((Date) object).getTime());
+        }
         return new Timestamp(getNumber(columnIndex).longValue());
     }
 
