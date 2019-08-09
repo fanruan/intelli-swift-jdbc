@@ -30,6 +30,10 @@ public class JdbcSwiftResultSet extends BaseApiResultSet<Pair<String, String>> {
 
     @Override
     public void close() {
-        new ClientProxy(swiftStatement.queryExecutor).getProxy(ApiServerService.class).close(queryId);
+        try {
+            new ClientProxy(swiftStatement.queryExecutor).getProxy(ApiServerService.class).close(queryId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
