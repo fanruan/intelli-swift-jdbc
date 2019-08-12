@@ -35,6 +35,7 @@ public class InsertValueVisitor extends BaseVisitor<Row> {
             switch (ColumnTypeUtils.getClassType(columns.get(i))) {
                 case INTEGER:
                     data.add(Integer.parseInt(text));
+                    break;
                 case LONG:
                     data.add(Long.parseLong(text));
                     break;

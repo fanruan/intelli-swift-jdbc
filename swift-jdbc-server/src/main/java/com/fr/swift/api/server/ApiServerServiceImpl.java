@@ -1,5 +1,6 @@
 package com.fr.swift.api.server;
 
+import com.fr.swift.SwiftContext;
 import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.info.ApiInvocation;
 import com.fr.swift.api.info.RequestInfo;
@@ -13,6 +14,7 @@ import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.ProxyServiceRegistry;
 import com.fr.swift.beans.annotation.SwiftBean;
+import com.fr.swift.service.ServiceContext;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -45,6 +47,11 @@ public class ApiServerServiceImpl implements ApiServerService {
             response.setStatusCode(ParamErrorCode.PARAMS_PARSER_ERROR);
         }
         return response;
+    }
+
+    @Override
+    public void close(String queryId) throws Exception {
+        SwiftContext.get().getBean(ServiceContext.class).clearQuery(queryId);
     }
 
     private Object invokeRequest(ApiInvocation invocation) {
