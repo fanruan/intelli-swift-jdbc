@@ -50,7 +50,7 @@ public class ApiServerServiceImpl implements ApiServerService {
     }
 
     @Override
-    public void close(String queryId) {
+    public void close(String queryId) throws Exception {
         SwiftContext.get().getBean(ServiceContext.class).clearQuery(queryId);
     }
 

@@ -4,6 +4,7 @@ import com.fr.swift.api.result.BaseApiResultSet;
 import com.fr.swift.api.result.SwiftApiResultSet;
 import com.fr.swift.api.server.ApiServerService;
 import com.fr.swift.jdbc.rpc.invoke.ClientProxy;
+import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.structure.Pair;
 
 import java.sql.SQLException;
@@ -30,6 +31,10 @@ public class JdbcSwiftResultSet extends BaseApiResultSet<Pair<String, String>> {
 
     @Override
     public void close() {
-        new ClientProxy(swiftStatement.queryExecutor).getProxy(ApiServerService.class).close(queryId);
+        try {
+            new ClientProxy(swiftStatement.queryExecutor).getProxy(ApiServerService.class).close(queryId);
+        } catch (Exception e) {
+            SwiftLoggers.getLogger().error(e);
+        }
     }
 }
