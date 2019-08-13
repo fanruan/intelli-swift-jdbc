@@ -6,7 +6,6 @@ import com.fr.swift.source.Row;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -86,24 +85,16 @@ public class MaintainResultSet extends BaseResultSet {
                 return null;
             }
 
+            /**
+             * TODO 目前只用了一个字段，先直接返回BIGINT不报错
+             *
+             * @param column
+             * @return
+             * @throws SQLException
+             */
             @Override
             public int getColumnType(int column) throws SQLException {
-                Object data = current.getValue(column - 1);
-                if (null != data) {
-                    if (data instanceof Double) {
-                        return Types.DOUBLE;
-                    }
-                    if (data instanceof Integer) {
-                        return Types.INTEGER;
-                    }
-                    if (data instanceof Date) {
-                        return Types.DATE;
-                    }
-                    if (data instanceof Number) {
-                        return Types.BIGINT;
-                    }
-                }
-                return Types.VARCHAR;
+                return Types.BIGINT;
             }
         };
     }
