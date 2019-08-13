@@ -16,7 +16,7 @@ import com.fr.swift.event.global.DeleteEvent;
 import com.fr.swift.exception.meta.SwiftMetaDataException;
 import com.fr.swift.property.SwiftProperty;
 import com.fr.swift.result.SwiftResultSet;
-import com.fr.swift.service.RealtimeService;
+import com.fr.swift.service.ServiceContext;
 import com.fr.swift.service.listener.RemoteSender;
 import com.fr.swift.service.listener.SwiftServiceListenerManager;
 import com.fr.swift.source.Row;
@@ -64,7 +64,7 @@ public class DataMaintenanceServiceImpl implements DataMaintenanceService {
         SwiftMetaDataBean metaData = (SwiftMetaDataBean) tableService.detectiveMetaData(schema, tableName);
         SourceKey sourceKey = new SourceKey(metaData.getId());
         try {
-            SwiftContext.get().getBean(RealtimeService.class).insert(sourceKey, resultSet);
+            SwiftContext.get().getBean(ServiceContext.class).insert(sourceKey, resultSet);
         } catch (SQLException e) {
             throw e;
         } catch (Exception e) {
