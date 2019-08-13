@@ -11,9 +11,10 @@ public class JdbcJsonBuilder {
 
     public static String buildSqlJson(String sql, String requestId, String database, String authCode) {
         requestId = Strings.isEmpty(requestId) ? UUID.randomUUID().toString() : requestId;
+
         return "{\"requestId\": \"" +
                 requestId +
-                "\", \"requestType\": \"SQL\", \"sql\": \"" + sql + "\",\"database\": \"" +
+                "\", \"requestType\": \"SQL\", \"sql\": \"" + sql.replaceAll("\\n", " ") + "\",\"database\": \"" +
                 database + "\", \"auth\": \"" + authCode + "\"}";
     }
 
