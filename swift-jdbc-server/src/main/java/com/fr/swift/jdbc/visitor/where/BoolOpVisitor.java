@@ -85,7 +85,7 @@ public class BoolOpVisitor extends BaseVisitor<FilterBeanCreator<FilterInfoBean>
                         public FilterInfoBean create(String column, Object value) {
                             String s = value.toString();
                             SwiftDetailFilterType filterType = null;
-                            if (s.startsWith(LIKE) && s.startsWith(LIKE)) {
+                            if (s.startsWith(LIKE) && s.endsWith(LIKE)) {
                                 filterType = SwiftDetailFilterType.STRING_LIKE;
                                 s = s.substring(1, s.length() - 1);
                             } else if (s.startsWith(LIKE)) {

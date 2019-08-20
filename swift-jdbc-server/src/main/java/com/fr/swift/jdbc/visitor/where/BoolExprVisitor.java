@@ -45,7 +45,7 @@ public class BoolExprVisitor extends BaseVisitor<FilterInfoBean> {
             Set<String> accept = boolExpr.values().accept(new ValueExprVisitor());
             filter = new InFilterBean(columnName, accept);
         } else if (null != aNull) {
-            filter = new NullFilterBean();
+            filter = new NullFilterBean(columnName);
         } else {
             String start = boolExpr.NUMERIC_LITERAL(0).getText();
             String end = boolExpr.NUMERIC_LITERAL(1).getText();
