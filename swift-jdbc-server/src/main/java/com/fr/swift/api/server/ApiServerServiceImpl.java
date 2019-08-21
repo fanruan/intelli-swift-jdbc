@@ -14,6 +14,7 @@ import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.ProxyServiceRegistry;
 import com.fr.swift.beans.annotation.SwiftBean;
+import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.service.ServiceContext;
 
 import java.io.Serializable;
@@ -34,15 +35,18 @@ public class ApiServerServiceImpl implements ApiServerService {
     @SwiftApi
     public ApiResponse dispatchRequest(String request) {
         ApiResponse response = new ApiResponseImpl();
+        SwiftLoggers.getLogger().info("Receive jdbc request body {}", request);
         try {
             RequestInfo requestInfo = JsonBuilder.readValue(request, RequestInfo.class);
             ApiInvocation invocation = requestInfo.accept(new SwiftRequestParserVisitor());
             Object object = invokeRequest(invocation);
             response.setResult((Serializable) object);
         } catch (ApiRequestRuntimeException re) {
+            SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, re);
             response.setThrowable(re);
             response.setStatusCode(re.getStatusCode());
         } catch (Exception e) {
+            SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, e);
             response.setThrowable(e);
             response.setStatusCode(ParamErrorCode.PARAMS_PARSER_ERROR);
         }
