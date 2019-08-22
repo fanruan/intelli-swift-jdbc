@@ -35,7 +35,7 @@ public class ApiServerServiceImpl implements ApiServerService {
     @SwiftApi
     public ApiResponse dispatchRequest(String request) {
         ApiResponse response = new ApiResponseImpl();
-        SwiftLoggers.getLogger().debug("Receive jdbc request body {}", request);
+        SwiftLoggers.getLogger().info("Receive jdbc request body {}", request);
         try {
             RequestInfo requestInfo = JsonBuilder.readValue(request, RequestInfo.class);
             ApiInvocation invocation = requestInfo.accept(new SwiftRequestParserVisitor());
