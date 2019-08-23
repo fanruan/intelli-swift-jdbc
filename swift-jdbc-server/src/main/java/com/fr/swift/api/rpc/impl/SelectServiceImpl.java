@@ -1,12 +1,12 @@
 package com.fr.swift.api.rpc.impl;
 
-import com.fr.swift.SwiftContext;
 import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.result.OnePageApiResultSet;
 import com.fr.swift.api.result.SwiftApiResultSet;
 import com.fr.swift.api.rpc.SelectService;
 import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.basics.annotation.ProxyService;
+import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.db.SwiftSchema;
 import com.fr.swift.query.QueryRunnerProvider;
@@ -29,7 +29,8 @@ import java.util.List;
 @SwiftApi
 @SwiftBean
 public class SelectServiceImpl implements SelectService {
-    private TableService tableService = SwiftContext.get().getBean(TableService.class);
+    @SwiftAutoWired
+    private TableService tableService;
 
     @Override
     @SwiftApi

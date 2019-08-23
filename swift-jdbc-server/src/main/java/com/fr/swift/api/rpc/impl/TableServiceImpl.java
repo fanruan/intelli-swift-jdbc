@@ -1,6 +1,5 @@
 package com.fr.swift.api.rpc.impl;
 
-import com.fr.swift.SwiftContext;
 import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.api.rpc.bean.Column;
@@ -8,6 +7,7 @@ import com.fr.swift.base.meta.MetaDataColumnBean;
 import com.fr.swift.base.meta.SwiftMetaDataBean;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
+import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.config.SwiftConfigConstants;
 import com.fr.swift.config.oper.impl.ConfigWhereImpl;
@@ -41,7 +41,8 @@ import java.util.List;
 @SwiftApi
 @SwiftBean
 public class TableServiceImpl implements TableService {
-    private SwiftMetaDataService swiftMetaDataService = SwiftContext.get().getBean(SwiftMetaDataService.class);
+    @SwiftAutoWired
+    private SwiftMetaDataService swiftMetaDataService;
 
     @Override
     @SwiftApi
