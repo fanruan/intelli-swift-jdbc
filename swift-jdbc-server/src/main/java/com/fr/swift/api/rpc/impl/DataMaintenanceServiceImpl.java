@@ -8,6 +8,7 @@ import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.base.meta.SwiftMetaDataBean;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
+import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.db.SwiftSchema;
 import com.fr.swift.db.Table;
@@ -37,7 +38,8 @@ import java.util.List;
 @SwiftApi
 @SwiftBean
 public class DataMaintenanceServiceImpl implements DataMaintenanceService {
-    private TableService tableService = SwiftContext.get().getBean(TableService.class);
+    @SwiftAutoWired
+    private TableService tableService;
 
     @Override
     @SwiftApi
