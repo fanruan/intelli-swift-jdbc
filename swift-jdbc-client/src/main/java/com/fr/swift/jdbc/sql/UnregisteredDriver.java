@@ -7,7 +7,12 @@ import com.fr.swift.jdbc.SwiftJdbcConstants;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.request.JdbcRequestService;
 import com.fr.swift.jdbc.request.impl.RequestServiceImpl;
+import com.fr.swift.util.Strings;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.sql.Connection;
@@ -60,6 +65,8 @@ public abstract class UnregisteredDriver implements Driver {
         } catch (Exception e) {
             throw Exceptions.urlFormat(url);
         }
+        final String query = holder.connectUri.getQuery();
+        parseQueryProperties(query, info);
         if (Mode.EMB.equals(mode)) {
             try {
                 Class clazz = Class.forName("com.fr.swift.jdbc.sql.EmbSwiftConnection");
@@ -87,6 +94,29 @@ public abstract class UnregisteredDriver implements Driver {
      */
     protected abstract String getConnectionSchema();
 
+    /**
+     * 解析下query
+     *
+     * @param query
+     * @param properties
+     * @throws SQLException
+     */
+    private void parseQueryProperties(String query, Properties properties) throws SQLException {
+        if (Strings.isNotEmpty(query)) {
+            final String[] queries = query.split("&");
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try (DataOutputStream dos = new DataOutputStream(out)) {
+                for (String q : queries) {
+                    dos.writeBytes(q);
+                    dos.writeBytes("\n");
+                }
+                properties.load(new ByteArrayInputStream(out.toByteArray()));
+            } catch (IOException e) {
+                throw new SQLException(e);
+            }
+        }
+    }
+
     @Override
     public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
         List<DriverPropertyInfo> list = new ArrayList<DriverPropertyInfo>();
@@ -96,7 +126,7 @@ public abstract class UnregisteredDriver implements Driver {
         for (BuildInConnectionProperty value : BuildInConnectionProperty.values()) {
             list.add(new DriverPropertyInfo(value.getPropertyName(), value.getDefaultValue().toString()));
         }
-        return list.toArray(new DriverPropertyInfo[list.size()]);
+        return list.toArray(new DriverPropertyInfo[0]);
     }
 
     @Override

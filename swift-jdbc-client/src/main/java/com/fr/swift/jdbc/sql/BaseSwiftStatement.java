@@ -21,8 +21,8 @@ public abstract class BaseSwiftStatement implements SwiftStatement {
 
     <T> T execute(String sql, String requestId, JdbcExecutor executor) throws SQLException {
         String newSql = JdbcJsonBuilder.buildSqlJson(sql, requestId, connection.getConfig().swiftDatabase(), connection.driver.holder.getAuthCode());
+//        SwiftLoggers.getLogger().info(newSql);
         return (T) connection.executeQueryInternal(newSql, executor);
     }
-
 
 }
