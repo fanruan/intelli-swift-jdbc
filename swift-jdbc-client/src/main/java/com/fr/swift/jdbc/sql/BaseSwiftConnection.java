@@ -359,7 +359,7 @@ public abstract class BaseSwiftConnection implements Connection {
     Object executeQueryInternal(String sql, JdbcExecutor executor) throws SQLException {
         try {
             // FIXME 2019-08-28 暂且使用延时来降低rpc频率
-            TimeUnit.MILLISECONDS.sleep(300);
+            TimeUnit.MILLISECONDS.sleep(getRpcWaitTime());
         } catch (InterruptedException e) {
             throw new SQLException(e);
         }
@@ -374,8 +374,12 @@ public abstract class BaseSwiftConnection implements Connection {
 
     protected abstract JdbcExecutor createJdbcExecutor(String address);
 
-    int connectionTimeout() {
+    protected int connectionTimeout() {
         return Integer.parseInt(BuildInConnectionProperty.CONNECTION_TIMEOUT.getValue(properties));
+    }
+
+    private int getRpcWaitTime() {
+        return Integer.parseInt(BuildInConnectionProperty.RPC_WAIT_TIME.getValue(properties));
     }
 
     public String getUrl() {
