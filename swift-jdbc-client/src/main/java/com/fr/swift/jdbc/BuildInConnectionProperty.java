@@ -9,6 +9,7 @@ import java.util.Properties;
 public enum BuildInConnectionProperty {
     //
     CONNECTION_TIMEOUT("conn_timeout", JdbcProperty.get().getConnectionTimeout()),
+    RPC_WAIT_TIME("rpc_wait", 300),
     USERNAME("swift_username", SwiftJdbcConstants.EMPTY),
     PASSWORD("swift_password", SwiftJdbcConstants.EMPTY),
     STATEMENT_MAX_IDLE("sttm_max_idle", JdbcProperty.get().getStatementMaxIdle()),
