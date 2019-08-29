@@ -25,6 +25,7 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yee
@@ -356,6 +357,12 @@ public abstract class BaseSwiftConnection implements Connection {
     }
 
     Object executeQueryInternal(String sql, JdbcExecutor executor) throws SQLException {
+        try {
+            // FIXME 2019-08-28 暂且使用延时来降低rpc频率
+            TimeUnit.MILLISECONDS.sleep(300);
+        } catch (InterruptedException e) {
+            throw new SQLException(e);
+        }
         ApiResponse response = driver.holder.getRequestService().applyWithRetry(executor, sql, 3);
         if (response.isError()) {
             throw Exceptions.sql(response.statusCode(), response.description());
