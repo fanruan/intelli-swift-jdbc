@@ -131,7 +131,7 @@ class QueryASTVisitorAdapter extends SQLASTVisitorAdapter implements SelectionBe
         private DetailQueryInfoBean bean;
 
         public DetailASTVisitorAdapter() {
-            this.bean = new DetailQueryInfoBean();
+            this.bean = DetailQueryInfoBean.builder(null).build();
         }
 
         @Override
@@ -177,7 +177,7 @@ class QueryASTVisitorAdapter extends SQLASTVisitorAdapter implements SelectionBe
         private GroupQueryInfoBean bean;
 
         public GroupASTVisitorAdapter() {
-            this.bean = new GroupQueryInfoBean();
+            this.bean = GroupQueryInfoBean.builder(null).build();
         }
 
         private static String getColumnName(SQLAggregateExpr aggregateExpr) {
