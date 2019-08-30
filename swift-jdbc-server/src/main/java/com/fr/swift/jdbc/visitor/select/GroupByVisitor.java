@@ -1,5 +1,6 @@
 package com.fr.swift.jdbc.visitor.select;
 
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.DimensionBean;
@@ -33,7 +34,7 @@ public class GroupByVisitor extends BaseQueryBeanVisitor<GroupQueryInfoBean> {
         List<DimensionBean> dimensionBeans = new ArrayList<>();
         if (null != ctx.groupBy) {
             for (SwiftSqlParser.NameContext nameContext : ctx.groupBy.name()) {
-                dimensionBeans.add(new DimensionBean(DimensionType.GROUP, nameContext.getText()));
+                dimensionBeans.add(new DimensionBean(DimensionType.GROUP, SwiftSqlParseUtil.trimQuote(nameContext.getText())));
             }
         }
         List<AggregationBean> metricBeans = new ArrayList<>();
