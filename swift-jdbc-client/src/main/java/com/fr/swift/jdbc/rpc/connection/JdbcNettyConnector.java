@@ -24,6 +24,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
  */
 public class JdbcNettyConnector extends BaseConnector {
     private EventLoopGroup group;
+    private static final int MAX_OBJ_SIZE = 1000000000;
 
     public JdbcNettyConnector(String address) {
         super(address);
@@ -49,7 +50,7 @@ public class JdbcNettyConnector extends BaseConnector {
             public void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
                 pipeline.addLast(
-                        new ObjectDecoder(1000000000, ClassResolvers.cacheDisabled(this
+                        new ObjectDecoder(MAX_OBJ_SIZE, ClassResolvers.cacheDisabled(this
                                 .getClass().getClassLoader())));
                 pipeline.addLast(new ObjectEncoder());
                 final JdbcExecutor jdbcExecutor = rpcExecutors.get(0);
