@@ -25,7 +25,6 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author yee
@@ -47,7 +46,7 @@ public abstract class BaseSwiftConnection implements Connection {
         this.holder.setTimeout(connectionTimeout());
     }
 
-    public String handleDatabase(String dbName) {
+    private String handleDatabase(String dbName) {
         if (null == dbName || SwiftJdbcConstants.EMPTY.equals(dbName.trim())) {
             return SwiftJdbcConstants.DEFAULT_DATABASE;
         }
@@ -357,12 +356,7 @@ public abstract class BaseSwiftConnection implements Connection {
     }
 
     Object executeQueryInternal(String sql, JdbcExecutor executor) throws SQLException {
-        try {
-            // FIXME 2019-08-28 暂且使用延时来降低rpc频率
-            TimeUnit.MILLISECONDS.sleep(getRpcWaitTime());
-        } catch (InterruptedException e) {
-            throw new SQLException(e);
-        }
+        // 这边不等了 有Netty的可以用netty的请求，没netty的还是走原来的不稳定的rpc
         ApiResponse response = driver.holder.getRequestService().applyWithRetry(executor, sql, 3);
         if (response.isError()) {
             throw Exceptions.sql(response.statusCode(), response.description());
@@ -370,16 +364,24 @@ public abstract class BaseSwiftConnection implements Connection {
         return response.result();
     }
 
+    /**
+     * 创建JdbcExecutor
+     *
+     * @param host
+     * @param port
+     * @return
+     */
     protected abstract JdbcExecutor createJdbcExecutor(String host, int port);
 
+    /**
+     * 创建JdbcExecutor
+     * @param address
+     * @return
+     */
     protected abstract JdbcExecutor createJdbcExecutor(String address);
 
     protected int connectionTimeout() {
         return Integer.parseInt(BuildInConnectionProperty.CONNECTION_TIMEOUT.getValue(properties));
-    }
-
-    private int getRpcWaitTime() {
-        return Integer.parseInt(BuildInConnectionProperty.RPC_WAIT_TIME.getValue(properties));
     }
 
     public String getUrl() {

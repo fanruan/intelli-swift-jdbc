@@ -16,14 +16,8 @@ public class ObjectDecoder extends AbstractSerializableDecoder {
 
     @Override
     public Object decode(byte[] bytes) throws Exception {
-        ObjectInputStream oos = null;
-        try {
-            oos = createObjectInputStream(bytes);
+        try (ObjectInputStream oos = createObjectInputStream(bytes)) {
             return oos.readObject();
-        } finally {
-            if (null != oos) {
-                oos.close();
-            }
         }
     }
 

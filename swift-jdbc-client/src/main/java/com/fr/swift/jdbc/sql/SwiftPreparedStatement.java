@@ -2,7 +2,7 @@ package com.fr.swift.jdbc.sql;
 
 import com.fr.swift.api.info.jdbc.SqlRequestInfo;
 import com.fr.swift.api.result.SwiftApiResultSet;
-import com.fr.swift.jdbc.druid.sql.SQLUtils;
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.result.MaintainResultSet;
 import com.fr.swift.jdbc.result.ResultSetWrapper;
@@ -49,7 +49,8 @@ public class SwiftPreparedStatement extends SwiftStatementImpl implements Prepar
 
     SwiftPreparedStatement(BaseSwiftConnection connection, String sql, JdbcExecutor query, JdbcExecutor maintain) {
         super(connection, query, maintain);
-        SQLUtils.parseStatements(sql, null);
+        // 这里检查是否是select的同时也能检查sql是否合法
+        SwiftSqlParseUtil.isSelect(sql);
         this.sql = sql;
         this.values = new ArrayList();
         final Matcher matcher = SwiftPreparedStatement.VALUE_POS_PATTERN.matcher(sql);

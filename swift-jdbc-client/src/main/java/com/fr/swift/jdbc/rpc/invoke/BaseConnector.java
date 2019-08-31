@@ -18,7 +18,7 @@ public abstract class BaseConnector implements JdbcConnector {
     protected String host = "localhost";
     protected int port = 7000;
     private ConcurrentLinkedQueue<SwiftRequest> sendQueueCache = new ConcurrentLinkedQueue<SwiftRequest>();
-    private List<JdbcExecutor> rpcExecutors;
+    protected List<JdbcExecutor> rpcExecutors;
 
     public BaseConnector(String host, int port) {
         this.host = host;
