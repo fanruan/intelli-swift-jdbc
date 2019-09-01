@@ -18,7 +18,11 @@ public class MetadataWrapper extends BaseResultSetMetaData {
 
     @Override
     public int getColumnCount() throws SQLException {
-        return metaData.getColumnCount();
+        try {
+            return metaData.getColumnCount();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     @Override

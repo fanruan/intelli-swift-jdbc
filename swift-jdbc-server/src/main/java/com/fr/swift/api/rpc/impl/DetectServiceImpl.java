@@ -1,19 +1,30 @@
 package com.fr.swift.api.rpc.impl;
 
 import com.fr.swift.annotation.SwiftApi;
+import com.fr.swift.api.result.OnePageApiResultSet;
+import com.fr.swift.api.result.SwiftApiResultSet;
 import com.fr.swift.api.rpc.DetectService;
 import com.fr.swift.api.server.response.AuthResponse;
 import com.fr.swift.api.server.response.AuthResponseImpl;
+import com.fr.swift.base.meta.MetaDataColumnBean;
+import com.fr.swift.base.meta.SwiftMetaDataBean;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftBean;
+import com.fr.swift.db.SwiftSchema;
 import com.fr.swift.event.global.GetAnalyseAndRealTimeAddrEvent;
 import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.property.SwiftProperty;
 import com.fr.swift.service.ServiceType;
 import com.fr.swift.service.listener.RemoteSender;
+import com.fr.swift.source.ListBasedRow;
+import com.fr.swift.source.Row;
+import com.fr.swift.source.SwiftMetaDataColumn;
 import com.fr.swift.source.core.MD5Utils;
+import com.fr.swift.util.Strings;
 
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +59,20 @@ public class DetectServiceImpl implements DetectService {
             response.setAnalyseAddress(Collections.<String>emptyList());
         }
         return response;
+    }
+
+    @Override
+    @SwiftApi
+    public SwiftApiResultSet detectiveCatalogs() {
+        List<Row> rows = new ArrayList<>();
+        for (SwiftSchema value : SwiftSchema.values()) {
+            rows.add(new ListBasedRow(Collections.singletonList(value.name())));
+        }
+        final SwiftMetaDataBean tableCat = new SwiftMetaDataBean(Strings.EMPTY,
+                Collections.<SwiftMetaDataColumn>singletonList(
+                        new MetaDataColumnBean("TABLE_CAT", Types.VARCHAR)));
+
+        return new OnePageApiResultSet(null, tableCat, rows, rows.size(), false);
     }
 
 }

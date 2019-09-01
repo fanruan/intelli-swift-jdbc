@@ -25,4 +25,24 @@ public class JdbcJsonBuilder {
                 password + "\", \"from\": \"" + fromAddress + "\"}";
     }
 
+
+    public static String buildTablesRequest(String database, String authCode) {
+        return "{\"requestId\": \"" +
+                UUID.randomUUID().toString() +
+                "\", \"requestType\": \"TABLES\", \"database\": \"" +
+                database + "\", \"auth\": \"" + authCode + "\"}";
+    }
+
+    public static String buildCatalogsRequest(String authCode) {
+        return "{\"requestId\": \"" +
+                UUID.randomUUID().toString() +
+                "\", \"requestType\": \"CATALOGS\", \"auth\": \"" + authCode + "\"}";
+    }
+
+    public static String buildColumnsRequest(String swiftDatabase, String tableNamePattern, String authCode) {
+        return "{\"requestId\": \"" +
+                UUID.randomUUID().toString() +
+                "\", \"requestType\": \"COLUMNS\", \"database\": \"" +
+                swiftDatabase + "\", \"table\":\"" + tableNamePattern + "\", \"auth\": \"" + authCode + "\"}";
+    }
 }

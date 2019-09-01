@@ -1,5 +1,6 @@
 package com.fr.swift.api.rpc;
 
+import com.fr.swift.api.result.SwiftApiResultSet;
 import com.fr.swift.api.server.response.AuthResponse;
 
 /**
@@ -14,4 +15,6 @@ public interface DetectService extends ApiService {
      * @return
      */
     AuthResponse detectiveAnalyseAndRealTime(String defaultAddress, String username, String password);
+
+    SwiftApiResultSet detectiveCatalogs();
 }

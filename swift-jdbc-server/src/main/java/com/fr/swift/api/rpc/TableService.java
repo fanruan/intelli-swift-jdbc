@@ -31,6 +31,14 @@ public interface TableService extends ApiService {
     List<SwiftMetaData> detectiveAllTable(SwiftSchema schema);
 
     /**
+     * 获取数据库下的所有表名
+     *
+     * @param schema
+     * @return
+     */
+    List<SwiftMetaData> detectiveTables(SwiftSchema schema, String tablePatten) throws SwiftMetaDataAbsentException;
+
+    /**
      * 表是否存在
      *
      * @param schema
