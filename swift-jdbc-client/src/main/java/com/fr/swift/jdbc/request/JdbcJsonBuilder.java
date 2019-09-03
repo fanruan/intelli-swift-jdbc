@@ -5,6 +5,7 @@ import com.fr.swift.util.Strings;
 import java.util.UUID;
 
 /**
+ * TODO 这种手撕json的做法不好
  * @author yee
  */
 public class JdbcJsonBuilder {
