@@ -11,8 +11,6 @@ import com.fr.swift.api.server.response.ApiResponseImpl;
 import com.fr.swift.api.server.response.error.ParamErrorCode;
 import com.fr.swift.api.server.response.error.ServerErrorCode;
 import com.fr.swift.base.json.JsonBuilder;
-import com.fr.swift.basics.annotation.ProxyService;
-import com.fr.swift.basics.base.ProxyServiceRegistry;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.service.ServiceContext;
@@ -28,7 +26,7 @@ import java.lang.reflect.Method;
  * @since Advanced FineBI 5.0
  */
 @SwiftBean
-@ProxyService(value = ApiServerService.class, type = ProxyService.ServiceType.EXTERNAL)
+@SwiftApi(service = ApiServerService.class)
 public class ApiServerServiceImpl implements ApiServerService {
 
     @Override
@@ -54,6 +52,7 @@ public class ApiServerServiceImpl implements ApiServerService {
     }
 
     @Override
+    @SwiftApi
     public void close(String queryId) throws Exception {
         SwiftContext.get().getBean(ServiceContext.class).clearQuery(queryId);
     }
@@ -65,7 +64,7 @@ public class ApiServerServiceImpl implements ApiServerService {
         String methodName = invocation.getMethodName();
         try {
             Method method = aClass.getMethod(methodName, parameterTypes);
-            return method.invoke(ProxyServiceRegistry.get().getExternalService(aClass), arguments);
+            return method.invoke(SwiftContext.get().getBean(aClass), arguments);
         } catch (Exception e) {
             return ApiCrasher.crash(ServerErrorCode.SERVER_INVOKE_ERROR, e);
         }

@@ -5,7 +5,6 @@ import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.api.rpc.bean.Column;
 import com.fr.swift.base.meta.MetaDataColumnBean;
 import com.fr.swift.base.meta.SwiftMetaDataBean;
-import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
@@ -39,8 +38,7 @@ import java.util.List;
  * @author yee
  * @date 2018/8/27
  */
-@ProxyService(value = TableService.class, type = ProxyService.ServiceType.EXTERNAL)
-@SwiftApi
+@SwiftApi(service = TableService.class)
 @SwiftBean
 public class TableServiceImpl implements TableService {
     @SwiftAutoWired

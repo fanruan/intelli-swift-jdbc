@@ -8,7 +8,6 @@ import com.fr.swift.api.server.response.AuthResponse;
 import com.fr.swift.api.server.response.AuthResponseImpl;
 import com.fr.swift.base.meta.MetaDataColumnBean;
 import com.fr.swift.base.meta.SwiftMetaDataBean;
-import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.db.SwiftSchema;
@@ -33,8 +32,7 @@ import java.util.Map;
  * @author yee
  * @date 2018/8/23
  */
-@ProxyService(value = DetectService.class, type = ProxyService.ServiceType.EXTERNAL)
-@SwiftApi
+@SwiftApi(service = DetectService.class)
 @SwiftBean
 public class DetectServiceImpl implements DetectService {
     @Override
