@@ -19,9 +19,7 @@ public class NettyObjectEncoder extends ObjectEncoder {
     public byte[] encode(Object object) throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(LENGTH_PLACEHOLDER);
-        ObjectOutputStream oos = null;
-        try {
-            oos = createObjectOutputStream(bos);
+        try (ObjectOutputStream oos = createObjectOutputStream(bos)) {
             oos.writeObject(object);
             byte[] data = bos.toByteArray();
             int length = data.length - LENGTH_PLACEHOLDER.length;
@@ -30,10 +28,6 @@ public class NettyObjectEncoder extends ObjectEncoder {
             data[2] = (byte) (length >>> 8);
             data[3] = (byte) length;
             return data;
-        } finally {
-            if (null != oos) {
-                oos.close();
-            }
         }
     }
 

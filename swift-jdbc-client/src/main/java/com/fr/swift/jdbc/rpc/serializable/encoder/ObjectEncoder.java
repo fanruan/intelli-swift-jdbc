@@ -12,16 +12,10 @@ import java.io.OutputStream;
 public class ObjectEncoder extends AbstractSerializableEncoder {
     @Override
     public byte[] encode(Object object) throws Exception {
-        ObjectOutputStream oos = null;
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            oos = createObjectOutputStream(bos);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = createObjectOutputStream(bos)) {
             oos.writeObject(object);
             return bos.toByteArray();
-        } finally {
-            if (null != oos) {
-                oos.close();
-            }
         }
     }
 
