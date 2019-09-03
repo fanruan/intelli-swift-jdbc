@@ -2,6 +2,8 @@ package com.fr.swift.jdbc.server;
 
 import com.fr.swift.SwiftContext;
 import com.fr.swift.annotation.SwiftApi;
+import com.fr.swift.config.entity.SwiftJdbcServerInfo;
+import com.fr.swift.config.service.SwiftJdbcServerInfoService;
 import com.fr.swift.jdbc.server.handler.JdbcServerHandler;
 import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.property.SwiftProperty;
@@ -42,8 +44,8 @@ public class JdbcServer {
     }
 
     private void initApiServices() {
-        apiServices = new HashMap<>();
         final Map<String, Object> beansByAnnotations = SwiftContext.get().getBeansByAnnotations(SwiftApi.class);
+        apiServices = new HashMap<>(beansByAnnotations.size());
         for (Map.Entry<String, Object> entry : beansByAnnotations.entrySet()) {
             final Object service = entry.getValue();
             final SwiftApi swiftApi = service.getClass().getAnnotation(SwiftApi.class);
@@ -76,6 +78,8 @@ public class JdbcServer {
             bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture future = bootstrap.bind(host, port).sync();
             SwiftLoggers.getLogger().info("JDBC Server started on ip:" + host + ", port :" + port);
+            final SwiftJdbcServerInfoService service = SwiftContext.get().getBean(SwiftJdbcServerInfoService.class);
+            service.saveOrUpdate(new SwiftJdbcServerInfo(swiftProperty.getClusterId(), host, port, "1.1"));
             future.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();

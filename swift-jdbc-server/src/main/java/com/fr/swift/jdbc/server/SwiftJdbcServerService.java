@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
  * @description
  * @since Advanced FineBI 5.0
  */
-@SwiftBean()
+@SwiftBean
 @com.fr.swift.annotation.ServerService(name = "jdbc")
 public class SwiftJdbcServerService implements ServerService {
 

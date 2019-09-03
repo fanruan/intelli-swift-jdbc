@@ -11,7 +11,7 @@ import com.fr.swift.base.meta.SwiftMetaDataBean;
 import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.db.SwiftSchema;
-import com.fr.swift.event.global.GetAnalyseAndRealTimeAddrEvent;
+import com.fr.swift.event.global.GetJdbcAddresses;
 import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.property.SwiftProperty;
 import com.fr.swift.service.ServiceType;
@@ -44,7 +44,7 @@ public class DetectServiceImpl implements DetectService {
         response.setAuthCode(authCode);
         try {
             if (SwiftProperty.getProperty().isCluster()) {
-                Map<ServiceType, List<String>> map = (Map<ServiceType, List<String>>) ProxySelector.getInstance().getFactory().getProxy(RemoteSender.class).trigger(new GetAnalyseAndRealTimeAddrEvent());
+                Map<ServiceType, List<String>> map = (Map<ServiceType, List<String>>) ProxySelector.getInstance().getFactory().getProxy(RemoteSender.class).trigger(new GetJdbcAddresses());
                 response.setAnalyseAddress(map.get(ServiceType.ANALYSE));
                 response.setRealTimeAddress(map.get(ServiceType.REAL_TIME));
             } else {
