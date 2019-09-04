@@ -5,8 +5,8 @@ import com.fr.swift.api.server.response.AuthResponse;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
-import com.fr.swift.jdbc.sql.BaseSwiftConnection;
 import com.fr.swift.jdbc.sql.ConnectionConfig;
+import com.fr.swift.jdbc.sql.SwiftConnection;
 import com.fr.swift.jdbc.sql.UnregisteredDriver;
 
 import java.io.File;
@@ -31,7 +31,7 @@ public class Driver extends UnregisteredDriver {
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        BaseSwiftConnection connection = (BaseSwiftConnection) super.connect(url, info);
+        SwiftConnection connection = (SwiftConnection) super.connect(url, info);
         if (null != connection) {
             testConnection(connection);
         }
@@ -44,7 +44,7 @@ public class Driver extends UnregisteredDriver {
      * @param connection
      * @throws SQLException
      */
-    private void testConnection(BaseSwiftConnection connection) throws SQLException {
+    private void testConnection(SwiftConnection connection) throws SQLException {
         ConnectionConfig config = connection.getConfig();
         File keytab = config.kerberosKeytab();
         if (null != keytab) {

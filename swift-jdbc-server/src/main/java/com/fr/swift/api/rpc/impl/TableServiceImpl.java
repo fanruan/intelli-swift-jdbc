@@ -5,11 +5,11 @@ import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.api.rpc.bean.Column;
 import com.fr.swift.base.meta.MetaDataColumnBean;
 import com.fr.swift.base.meta.SwiftMetaDataBean;
-import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.config.SwiftConfigConstants;
+import com.fr.swift.config.oper.ConfigWhere;
 import com.fr.swift.config.oper.impl.ConfigWhereImpl;
 import com.fr.swift.config.service.SwiftMetaDataService;
 import com.fr.swift.db.AlterTableAction;
@@ -27,6 +27,7 @@ import com.fr.swift.source.SourceKey;
 import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.source.SwiftMetaDataColumn;
 import com.fr.swift.util.Crasher;
+import com.fr.swift.util.Strings;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,8 +38,7 @@ import java.util.List;
  * @author yee
  * @date 2018/8/27
  */
-@ProxyService(value = TableService.class, type = ProxyService.ServiceType.EXTERNAL)
-@SwiftApi
+@SwiftApi(service = TableService.class)
 @SwiftBean
 public class TableServiceImpl implements TableService {
     @SwiftAutoWired
@@ -63,6 +63,32 @@ public class TableServiceImpl implements TableService {
             return Collections.emptyList();
         } else {
             return metaDataList;
+        }
+    }
+
+    @Override
+    @SwiftApi
+    public List<SwiftMetaData> detectiveTables(SwiftSchema schema, String tablePatten) throws SwiftMetaDataAbsentException {
+        if (Strings.isEmpty(tablePatten) || "%".equals(tablePatten)) {
+            return detectiveAllTable(schema);
+        }
+        if (tablePatten.startsWith("%") && tablePatten.endsWith("%")) {
+            return swiftMetaDataService.find(
+                    ConfigWhereImpl.eq(SwiftConfigConstants.MetaDataConfig.COLUMN_SWIFT_SCHEMA, schema)
+                    , ConfigWhereImpl.like(SwiftConfigConstants.MetaDataConfig.COLUMN_TABLE_NAME,
+                            tablePatten.replaceAll("%", ""), ConfigWhere.MatchMode.ANY));
+        } else if (tablePatten.startsWith("%")) {
+            return swiftMetaDataService.find(
+                    ConfigWhereImpl.eq(SwiftConfigConstants.MetaDataConfig.COLUMN_SWIFT_SCHEMA, schema)
+                    , ConfigWhereImpl.like(SwiftConfigConstants.MetaDataConfig.COLUMN_TABLE_NAME,
+                            tablePatten.replaceAll("%", ""), ConfigWhere.MatchMode.END));
+        } else if (tablePatten.endsWith("%")) {
+            return swiftMetaDataService.find(
+                    ConfigWhereImpl.eq(SwiftConfigConstants.MetaDataConfig.COLUMN_SWIFT_SCHEMA, schema)
+                    , ConfigWhereImpl.like(SwiftConfigConstants.MetaDataConfig.COLUMN_TABLE_NAME,
+                            tablePatten.replaceAll("%", ""), ConfigWhere.MatchMode.START));
+        } else {
+            return Collections.singletonList(detectiveMetaData(schema, tablePatten));
         }
     }
 

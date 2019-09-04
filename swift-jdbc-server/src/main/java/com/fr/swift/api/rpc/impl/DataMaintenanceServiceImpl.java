@@ -6,7 +6,6 @@ import com.fr.swift.api.rpc.DataMaintenanceService;
 import com.fr.swift.api.rpc.SelectService;
 import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.base.meta.SwiftMetaDataBean;
-import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
@@ -34,8 +33,7 @@ import java.util.List;
  * @author yee
  * @date 2018/8/23
  */
-@ProxyService(value = DataMaintenanceService.class, type = ProxyService.ServiceType.EXTERNAL)
-@SwiftApi
+@SwiftApi(service = DataMaintenanceService.class)
 @SwiftBean
 public class DataMaintenanceServiceImpl implements DataMaintenanceService {
     @SwiftAutoWired

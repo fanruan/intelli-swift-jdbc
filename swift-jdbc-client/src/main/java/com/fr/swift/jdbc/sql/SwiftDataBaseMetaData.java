@@ -1,15 +1,14 @@
 package com.fr.swift.jdbc.sql;
 
-import com.fr.swift.api.info.jdbc.ColumnsRequestInfo;
-import com.fr.swift.api.info.jdbc.TablesRequestInfo;
 import com.fr.swift.api.server.response.ApiResponse;
-import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.jdbc.JdbcProperty;
 import com.fr.swift.jdbc.SwiftJdbcConstants;
 import com.fr.swift.jdbc.exception.Exceptions;
+import com.fr.swift.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.jdbc.result.EmptyResultSet;
 import com.fr.swift.jdbc.result.IteratorBasedResultSet;
 import com.fr.swift.jdbc.result.ResultSetWrapper;
+import com.fr.swift.result.SwiftResultSet;
 import com.fr.swift.source.ListBasedRow;
 import com.fr.swift.source.Row;
 import com.fr.swift.source.SwiftMetaData;
@@ -22,6 +21,7 @@ import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,14 +40,17 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         TABLE_LABEL_TO_INDEX.put("TABLE_CAT", 1);
         TABLE_LABEL_TO_INDEX.put("TABLE_SCHEMA", 2);
         TABLE_LABEL_TO_INDEX.put("TABLE_NAME", 3);
-        TABLE_LABEL_TO_INDEX.put("TYPE_NAME", 4);
+        TABLE_LABEL_TO_INDEX.put("TABLE_TYPE", 4);
         TABLE_LABEL_TO_INDEX.put("REMARKS", 5);
+        TABLE_LABEL_TO_INDEX.put("TYPE_NAME", 6);
 
-        COLUMN_LABEL_TO_INDEX.put("REMARKS", 1);
-        COLUMN_LABEL_TO_INDEX.put("COLUMN_NAME", 2);
-        COLUMN_LABEL_TO_INDEX.put("DATA_TYPE", 3);
-        COLUMN_LABEL_TO_INDEX.put("COLUMN_SIZE", 4);
-        COLUMN_LABEL_TO_INDEX.put("DECIMAL_DIGITS", 5);
+        COLUMN_LABEL_TO_INDEX.put("TABLE_CAT", 1);
+        COLUMN_LABEL_TO_INDEX.put("TABLE_NAME", 2);
+        COLUMN_LABEL_TO_INDEX.put("REMARKS", 3);
+        COLUMN_LABEL_TO_INDEX.put("COLUMN_NAME", 4);
+        COLUMN_LABEL_TO_INDEX.put("DATA_TYPE", 5);
+        COLUMN_LABEL_TO_INDEX.put("COLUMN_SIZE", 6);
+        COLUMN_LABEL_TO_INDEX.put("DECIMAL_DIGITS", 7);
     }
 
     public SwiftDataBaseMetaData(BaseSwiftConnection connection) {
@@ -366,7 +369,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public String getCatalogTerm() throws SQLException {
-        return null;
+        return "database";
     }
 
     @Override
@@ -646,27 +649,36 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getProcedures(String catalog, String schemaPattern, String procedureNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getProcedureColumns(String catalog, String schemaPattern, String procedureNamePattern, String columnNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getSchemas() throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getCatalogs() throws SQLException {
-        return null;
+        final ConnectionConfig config = connection.getConfig();
+        final String json = JdbcJsonBuilder.buildCatalogsRequest(connection.driver.holder.getAuthCode());
+        final ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(config.requestExecutor(), json, 3);
+        if (response.isError()) {
+            throw Exceptions.sql(response.statusCode(), response.description());
+        }
+        final SwiftResultSet result = (SwiftResultSet) response.result();
+        return new ResultSetWrapper(result, Collections.singletonMap("TABLE_CAT", 1));
     }
 
     @Override
     public ResultSet getTableTypes() throws SQLException {
-        return null;
+        List<Row> rows = new ArrayList<>();
+        rows.add(new ListBasedRow(Collections.singletonList("TABLE")));
+        return new ResultSetWrapper(new IteratorBasedResultSet(rows.iterator()), Collections.<String, Integer>emptyMap());
     }
 
     /**
@@ -682,36 +694,32 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         final ConnectionConfig config = connection.getConfig();
         final List<Row> tables = new ArrayList<Row>();
         if (Arrays.binarySearch(types, SwiftJdbcConstants.TABLE) >= 0) {
-            try {
-                String requestJson = JsonBuilder.writeJsonString(new TablesRequestInfo(config.swiftDatabase(), connection.driver.holder.getAuthCode()));
-                ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(config.requestExecutor(), requestJson, 3);
-                if (response.isError()) {
-                    throw Exceptions.sql(response.statusCode(), response.description());
-                }
-                List<SwiftMetaData> metaDataList = (List<SwiftMetaData>) response.result();
-                for (SwiftMetaData metaData : metaDataList) {
-                    List<String> row = new ArrayList<String>();
-                    // TABLE_CAT
-                    row.add(config.swiftDatabase());
-                    // TABLE_SCHEMA
-                    row.add(null);
-                    // TABLE_NAME
-                    row.add(metaData.getTableName());
-                    // TABLE_TYPE
-                    row.add(SwiftJdbcConstants.TABLE);
-                    // REMARKS
-                    row.add(metaData.getRemark());
-                    tables.add(new ListBasedRow(row));
-                }
-            } catch (Exception e) {
-                throw Exceptions.sql(e);
+            String requestJson = JdbcJsonBuilder.buildTablesRequest(catalog, connection.driver.holder.getAuthCode());
+            ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(config.requestExecutor(), requestJson, 3);
+            if (response.isError()) {
+                throw Exceptions.sql(response.statusCode(), response.description());
+            }
+            List<SwiftMetaData> metaDataList = (List<SwiftMetaData>) response.result();
+            for (SwiftMetaData metaData : metaDataList) {
+                List<String> row = new ArrayList<String>();
+                // TABLE_CAT
+                row.add(catalog);
+                // TABLE_SCHEMA
+                row.add(null);
+                // TABLE_NAME
+                row.add(metaData.getTableName());
+                // TABLE_TYPE
+                row.add(SwiftJdbcConstants.TABLE);
+                // REMARKS
+                row.add(metaData.getRemark());
+                row.add(null);
+                tables.add(new ListBasedRow(row));
             }
         }
         return new ResultSetWrapper(new IteratorBasedResultSet(tables.iterator()), TABLE_LABEL_TO_INDEX);
     }
 
     /**
-     *
      * @param catalog
      * @param schemaPattern
      * @param tableNamePattern
@@ -724,13 +732,15 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         ConnectionConfig config = connection.getConfig();
         List<Row> fields = new ArrayList<Row>();
         try {
-            String requestJson = JsonBuilder.writeJsonString(new ColumnsRequestInfo(config.swiftDatabase(), tableNamePattern, connection.driver.holder.getAuthCode()));
+            String requestJson = JdbcJsonBuilder.buildColumnsRequest(catalog, tableNamePattern, connection.driver.holder.getAuthCode());
             ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(config.requestExecutor(), requestJson, 3);
             if (response.isError()) {
                 throw Exceptions.sql(response.statusCode(), response.description());
             }
-            SwiftMetaData metaData = (SwiftMetaData) response.result();
-            dealColumns(fields, metaData);
+            List<SwiftMetaData> metaDatas = (List<SwiftMetaData>) response.result();
+            for (SwiftMetaData metaData : metaDatas) {
+                dealColumns(fields, metaData);
+            }
         } catch (Exception e) {
             throw Exceptions.sql(e);
         }
@@ -741,6 +751,8 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         for (int i = 0; i < metaData.getColumnCount(); i++) {
             SwiftMetaDataColumn column = metaData.getColumn(i + 1);
             List list = new ArrayList();
+            list.add(metaData.getSwiftSchema().name());
+            list.add(metaData.getTableName());
             list.add(column.getRemark());
             list.add(column.getName());
             list.add(column.getType());
@@ -862,12 +874,12 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return null;
+        return connection;
     }
 
     @Override
@@ -892,17 +904,17 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getSuperTypes(String catalog, String schemaPattern, String typeNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getSuperTables(String catalog, String schemaPattern, String tableNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getAttributes(String catalog, String schemaPattern, String typeNamePattern, String attributeNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
@@ -957,7 +969,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
-        return null;
+        return getSchemas();
     }
 
     @Override
@@ -972,22 +984,22 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
 
     @Override
     public ResultSet getClientInfoProperties() throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getFunctions(String catalog, String schemaPattern, String functionNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getFunctionColumns(String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override
     public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException {
-        return null;
+        return new ResultSetWrapper(EmptyResultSet.INSTANCE, Collections.<String, Integer>emptyMap());
     }
 
     @Override

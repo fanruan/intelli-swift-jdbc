@@ -10,6 +10,7 @@ import com.fr.swift.api.info.api.DropRequestInfo;
 import com.fr.swift.api.info.api.InsertRequestInfo;
 import com.fr.swift.api.info.api.QueryRequestInfo;
 import com.fr.swift.api.info.api.TableRequestInfo;
+import com.fr.swift.api.info.jdbc.CatalogRequestInfo;
 import com.fr.swift.api.info.jdbc.ColumnsRequestInfo;
 import com.fr.swift.api.info.jdbc.JdbcRequestParserVisitor;
 import com.fr.swift.api.info.jdbc.SqlRequestInfo;
@@ -152,7 +153,12 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
         String database = columnsRequestInfo.getDatabase();
         String table = columnsRequestInfo.getTable();
         SwiftSchema swiftSchema = SwiftSchema.fromKey(database);
-        return createApiInvocation("detectiveMetaData", TableService.class, swiftSchema, table);
+        return createApiInvocation("detectiveTables", TableService.class, swiftSchema, table);
+    }
+
+    @Override
+    public ApiInvocation visit(CatalogRequestInfo tablesRequestInfo) {
+        return createApiInvocation("detectiveCatalogs", DetectService.class);
     }
 
     @Override

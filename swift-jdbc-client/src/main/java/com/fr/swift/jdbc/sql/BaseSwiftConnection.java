@@ -12,7 +12,6 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -30,7 +29,7 @@ import java.util.concurrent.Executor;
  * @author yee
  * @date 2018/11/16
  */
-public abstract class BaseSwiftConnection implements Connection {
+public abstract class BaseSwiftConnection implements SwiftConnection {
 
     protected UnregisteredDriver driver;
     private String database;
@@ -53,6 +52,7 @@ public abstract class BaseSwiftConnection implements Connection {
         return dbName.startsWith(SwiftJdbcConstants.SEPARATOR) ? dbName.substring(1).toUpperCase() : dbName.toUpperCase();
     }
 
+    @Override
     public ConnectionConfig getConfig() {
         return new ConnectionConfigImpl();
     }
@@ -97,7 +97,7 @@ public abstract class BaseSwiftConnection implements Connection {
 
     @Override
     public DatabaseMetaData getMetaData() throws SQLException {
-        return new SwiftDataBaseMetaData(this);
+        return new SwiftDataBaseMetaData(BaseSwiftConnection.this);
     }
 
     @Override
@@ -287,7 +287,7 @@ public abstract class BaseSwiftConnection implements Connection {
 
     @Override
     public boolean isValid(int timeout) {
-        return false;
+        return true;
     }
 
     @Override

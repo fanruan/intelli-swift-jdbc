@@ -5,7 +5,6 @@ import com.fr.swift.api.result.OnePageApiResultSet;
 import com.fr.swift.api.result.SwiftApiResultSet;
 import com.fr.swift.api.rpc.SelectService;
 import com.fr.swift.api.rpc.TableService;
-import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.db.SwiftSchema;
@@ -25,8 +24,7 @@ import java.util.List;
  * @author yee
  * @date 2018/8/23
  */
-@ProxyService(value = SelectService.class, type = ProxyService.ServiceType.EXTERNAL)
-@SwiftApi
+@SwiftApi(service = SelectService.class)
 @SwiftBean
 public class SelectServiceImpl implements SelectService {
     @SwiftAutoWired
