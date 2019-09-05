@@ -8,6 +8,7 @@ import com.fr.swift.jdbc.rpc.connection.RpcNioConnector;
 import com.fr.swift.jdbc.rpc.invoke.BaseSelector;
 import com.fr.swift.jdbc.rpc.serializable.decoder.SerializableDecoder;
 import com.fr.swift.jdbc.rpc.serializable.encoder.SerializableEncoder;
+import com.fr.swift.jdbc.rpc.util.SocketChannelUtils;
 
 import java.io.IOException;
 import java.nio.channels.SelectableChannel;
@@ -80,8 +81,8 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
             @Override
             public void run() {
                 try {
-                    SelectionKey selectionKey = connector.getChannel().register(selector, READ_OP);
-                    RpcNioSelector.this.initNewSocketChannel(connector.getChannel(), connector, selectionKey);
+                    connector.getChannel().register(selector, READ_OP);
+                    RpcNioSelector.this.initNewSocketChannel(connector.getChannel(), connector);
                 } catch (Exception e) {
                     connector.handlerException(e);
                 }
@@ -108,7 +109,7 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
         return result;
     }
 
-    private void initNewSocketChannel(SocketChannel channel, RpcNioConnector connector, SelectionKey selectionKey) {
+    private void initNewSocketChannel(SocketChannel channel, RpcNioConnector connector) {
         connectorCache.put(channel, connector);
         connectors.add(connector);
     }
@@ -131,7 +132,7 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
     private boolean doAccept(SelectionKey selectionKey) {
         ServerSocketChannel server = (ServerSocketChannel) selectionKey.channel();
         try {
-            SocketChannel client = server.accept();
+            SocketChannel client = SocketChannelUtils.wrapSocketOptions(server, Integer.MAX_VALUE).accept();
             if (client != null) {
                 client.configureBlocking(false);
                 RpcNioConnector connector = new RpcNioConnector(client, this);
@@ -147,7 +148,8 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
 
     private boolean doRead(SelectionKey selectionKey) {
         boolean result = false;
-        SocketChannel client = (SocketChannel) selectionKey.channel();
+        SocketChannel client = SocketChannelUtils
+                .wrapSocketOptions((SocketChannel) selectionKey.channel(), Integer.MAX_VALUE);
         RpcNioConnector connector = connectorCache.get(client);
         if (connector != null) {
             try {

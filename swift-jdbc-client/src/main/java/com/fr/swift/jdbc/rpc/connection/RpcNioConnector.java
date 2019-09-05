@@ -1,12 +1,15 @@
 package com.fr.swift.jdbc.rpc.connection;
 
+import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.jdbc.rpc.JdbcSelector;
 import com.fr.swift.jdbc.rpc.invoke.BaseConnector;
 import com.fr.swift.jdbc.rpc.selector.RpcNioSelector;
-import com.fr.swift.jdbc.rpc.serializable.decoder.NettyObjectDecoder;
+import com.fr.swift.jdbc.rpc.serializable.decoder.NioForNettyServerDecoder;
 import com.fr.swift.jdbc.rpc.serializable.decoder.SerializableDecoder;
-import com.fr.swift.jdbc.rpc.serializable.encoder.NettyObjectEncoder;
+import com.fr.swift.jdbc.rpc.serializable.encoder.NioForNettyServerEncoder;
 import com.fr.swift.jdbc.rpc.serializable.encoder.SerializableEncoder;
+import com.fr.swift.jdbc.rpc.util.SocketChannelUtils;
+import com.fr.swift.log.SwiftLoggers;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -27,11 +30,11 @@ public class RpcNioConnector extends BaseConnector {
     }
 
     public RpcNioConnector(String address) {
-        this(address, new NettyObjectEncoder(), new NettyObjectDecoder());
+        this(address, new NioForNettyServerEncoder(), new NioForNettyServerDecoder());
     }
 
     public RpcNioConnector(String host, int port) {
-        this(host, port, new NettyObjectEncoder(), new NettyObjectDecoder());
+        this(host, port, new NioForNettyServerEncoder(), new NioForNettyServerDecoder());
     }
 
     public RpcNioConnector(String host, int port, SerializableEncoder encoder, SerializableDecoder decoder) {
@@ -57,25 +60,33 @@ public class RpcNioConnector extends BaseConnector {
     public void start() {
         if (channel == null) {
             try {
-                channel = SocketChannel.open();
-                channel.connect(new InetSocketAddress(host, port));
+                channel = SocketChannelUtils.wrapSocketOptions(SocketChannel.open(), Integer.MAX_VALUE);
                 channel.configureBlocking(false);
-                while (!channel.isConnected()) {
+                channel.connect(new InetSocketAddress(host, port));
+                while (!channel.finishConnect()) {
                 }
                 selector.start();
                 selector.register(this);
             } catch (IOException e) {
-                e.printStackTrace();
+                SwiftLoggers.getLogger().error(e);
             }
         }
     }
 
     @Override
     public void stop() {
-        try {
-            channel.close();
-            selector.stop();
-        } catch (IOException e) {
+        if (channel.isConnected()) {
+            try {
+                channel.close();
+                selector.stop();
+                while (channel.isConnected()) {
+                    // 等待channel关闭
+                }
+            } catch (IOException e) {
+            }
+            for (JdbcExecutor rpcExecutor : rpcExecutors) {
+                rpcExecutor.stop();
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ import java.io.OutputStream;
  * @author yee
  * @date 2018/8/26
  */
-public class NettyObjectEncoder extends ObjectEncoder {
+public class NioForNettyServerEncoder extends ObjectEncoder {
     private static final byte[] LENGTH_PLACEHOLDER = new byte[4];
 
     @Override
