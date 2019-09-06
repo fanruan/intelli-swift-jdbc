@@ -44,7 +44,7 @@ public class RemoteConnection extends BaseSwiftConnection {
                 try {
                     return method.invoke(nettyCreator, args);
                 } catch (Exception e) {
-                    SwiftLoggers.getLogger().error("Invoke NettyCreator Error. Using default", e);
+                    SwiftLoggers.getLogger().warn("Invoke NettyCreator Error. Using default", e);
                     return method.invoke(simpleCreator, args);
                 }
             }
