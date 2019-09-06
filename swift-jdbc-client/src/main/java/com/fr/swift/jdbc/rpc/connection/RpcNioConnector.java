@@ -2,6 +2,7 @@ package com.fr.swift.jdbc.rpc.connection;
 
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.jdbc.rpc.JdbcSelector;
+import com.fr.swift.jdbc.rpc.executor.JdbcThreadPoolExecutor;
 import com.fr.swift.jdbc.rpc.invoke.BaseConnector;
 import com.fr.swift.jdbc.rpc.selector.RpcNioSelector;
 import com.fr.swift.jdbc.rpc.serializable.decoder.NioForNettyServerDecoder;
@@ -14,6 +15,7 @@ import com.fr.swift.log.SwiftLoggers;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author yee
@@ -22,11 +24,13 @@ import java.nio.channels.SocketChannel;
 public class RpcNioConnector extends BaseConnector {
     private SocketChannel channel;
     private JdbcSelector selector;
+    private ExecutorService stopExecutor;
 
 
     public RpcNioConnector(String address, SerializableEncoder encoder, SerializableDecoder decoder) {
         super(address);
         this.selector = new RpcNioSelector(encoder, decoder);
+        this.stopExecutor = JdbcThreadPoolExecutor.newInstance(1, "RpcNioConnector.stop#" + address);
     }
 
     public RpcNioConnector(String address) {
@@ -61,8 +65,8 @@ public class RpcNioConnector extends BaseConnector {
         if (channel == null) {
             try {
                 channel = SocketChannelUtils.wrapSocketOptions(SocketChannel.open(), Integer.MAX_VALUE);
-                channel.configureBlocking(false);
                 channel.connect(new InetSocketAddress(host, port));
+                channel.configureBlocking(false);
                 while (!channel.finishConnect()) {
                 }
                 selector.start();
@@ -79,14 +83,23 @@ public class RpcNioConnector extends BaseConnector {
             try {
                 channel.close();
                 selector.stop();
-                while (channel.isConnected()) {
-                    // 等待channel关闭
-                }
+                this.stopExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (channel.isConnected()) {
+                            // 等待channel关闭
+                        }
+                        for (JdbcExecutor rpcExecutor : rpcExecutors) {
+                            rpcExecutor.stop();
+                        }
+                    }
+                });
             } catch (IOException e) {
+                SwiftLoggers.getLogger().warn(e);
+            } finally {
+                stopExecutor.shutdown();
             }
-            for (JdbcExecutor rpcExecutor : rpcExecutors) {
-                rpcExecutor.stop();
-            }
+
         }
     }
 }
