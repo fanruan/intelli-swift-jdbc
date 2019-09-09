@@ -71,6 +71,12 @@ public class SimpleExecutor implements JdbcExecutor {
     @Override
     public void stop() {
         connector.stop();
+        lock.lock();
+        try {
+            condition.signalAll();
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override

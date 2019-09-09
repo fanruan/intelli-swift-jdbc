@@ -16,7 +16,7 @@ import java.nio.channels.SocketChannel;
  * @author yee
  * @date 2018/8/26
  */
-public class NettyObjectDecoder extends ObjectDecoder {
+public class NioForNettyServerDecoder extends ObjectDecoder {
 
     @Override
     protected ObjectInputStream createObjectInputStream(byte[] bytes) throws IOException {
@@ -46,8 +46,10 @@ public class NettyObjectDecoder extends ObjectDecoder {
             throw Exceptions.noCodecResponse();
         }
         ByteBuffer contentBuffer = ByteBuffer.allocate(length);
-        Thread.sleep(100);
-        channel.read(contentBuffer);
+        int read = 0;
+        while (read < length) {
+            read += channel.read(contentBuffer);
+        }
         contentBuffer.flip();
         return super.decode(contentBuffer.array());
     }

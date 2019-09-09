@@ -13,6 +13,7 @@ import com.fr.swift.source.ListBasedRow;
 import com.fr.swift.source.Row;
 import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.source.SwiftMetaDataColumn;
+import com.fr.swift.util.Strings;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -694,6 +695,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         final ConnectionConfig config = connection.getConfig();
         final List<Row> tables = new ArrayList<Row>();
         if (Arrays.binarySearch(types, SwiftJdbcConstants.TABLE) >= 0) {
+            catalog = Strings.isEmpty(catalog) ? config.swiftDatabase() : catalog;
             String requestJson = JdbcJsonBuilder.buildTablesRequest(catalog, connection.driver.holder.getAuthCode());
             ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(config.requestExecutor(), requestJson, 3);
             if (response.isError()) {

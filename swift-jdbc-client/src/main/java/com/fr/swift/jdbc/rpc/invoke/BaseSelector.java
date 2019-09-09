@@ -3,10 +3,9 @@ package com.fr.swift.jdbc.rpc.invoke;
 import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.rpc.JdbcConnector;
 import com.fr.swift.jdbc.rpc.JdbcSelector;
-import com.fr.swift.jdbc.thread.JdbcThreadFactory;
+import com.fr.swift.jdbc.rpc.executor.JdbcThreadPoolExecutor;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author yee
@@ -46,7 +45,7 @@ public abstract class BaseSelector<T extends JdbcConnector> implements JdbcSelec
     @Override
     public void start() {
         if (null == singleNotifyThread || singleNotifyThread.isShutdown()) {
-            singleNotifyThread = Executors.newSingleThreadExecutor(new JdbcThreadFactory.Builder().setName("swift-jdbc-notify-thread").build());
+            singleNotifyThread = JdbcThreadPoolExecutor.newInstance(1, "swift-jdbc-notify-thread");
         }
         setUpSelector();
     }

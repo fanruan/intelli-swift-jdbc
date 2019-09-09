@@ -69,6 +69,9 @@ public class JdbcNettyConnector extends BaseConnector {
 
     @Override
     public void stop() {
-        group.shutdownGracefully();
+        if (!group.isShutdown() && !group.isShuttingDown()) {
+            group.shutdownGracefully();
+        }
+
     }
 }
