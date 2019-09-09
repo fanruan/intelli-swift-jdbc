@@ -4,17 +4,16 @@ import com.fr.swift.log.SwiftLoggers;
 
 import java.io.IOException;
 import java.net.StandardSocketOptions;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.NetworkChannel;
 
 /**
  * @author yee
  * @date 2019-09-05
  */
 public class SocketChannelUtils {
-    public static SocketChannel wrapSocketOptions(SocketChannel channel, int bufferSize) {
+    public static <Channel extends NetworkChannel> Channel wrapSocketOptions(Channel channel, int bufferSize) {
         try {
-            return channel.setOption(StandardSocketOptions.SO_KEEPALIVE, Boolean.TRUE)
+            return (Channel) channel.setOption(StandardSocketOptions.SO_KEEPALIVE, Boolean.TRUE)
                     .setOption(StandardSocketOptions.TCP_NODELAY, Boolean.TRUE)
                     .setOption(StandardSocketOptions.SO_RCVBUF, bufferSize)
                     .setOption(StandardSocketOptions.SO_SNDBUF, bufferSize);
@@ -25,15 +24,4 @@ public class SocketChannelUtils {
         }
     }
 
-    public static ServerSocketChannel wrapSocketOptions(ServerSocketChannel channel, int bufferSize) {
-        try {
-            return channel.setOption(StandardSocketOptions.SO_KEEPALIVE, Boolean.TRUE)
-                    .setOption(StandardSocketOptions.TCP_NODELAY, Boolean.TRUE)
-                    .setOption(StandardSocketOptions.SO_RCVBUF, bufferSize)
-                    .setOption(StandardSocketOptions.SO_SNDBUF, bufferSize);
-        } catch (IOException e) {
-            SwiftLoggers.getLogger().warn(e);
-            return channel;
-        }
-    }
 }

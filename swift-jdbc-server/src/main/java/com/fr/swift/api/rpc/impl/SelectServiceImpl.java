@@ -37,7 +37,7 @@ public class SelectServiceImpl implements SelectService {
             QueryBean queryBean = QueryBeanFactory.create(queryJson);
             if (queryBean instanceof AbstractSingleTableQueryInfoBean) {
                 // fetchSize设成500 别问为什么 试出来的
-                ((AbstractSingleTableQueryInfoBean) queryBean).setFetchSize(2000);
+                ((AbstractSingleTableQueryInfoBean) queryBean).setFetchSize(5000);
                 String tableName = queryBean.getTableName();
                 // 检查当前数据库下是否有这张表
                 tableService.detectiveMetaData(database, tableName);
