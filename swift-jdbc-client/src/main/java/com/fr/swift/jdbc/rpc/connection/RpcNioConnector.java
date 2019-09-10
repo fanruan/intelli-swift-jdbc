@@ -44,6 +44,7 @@ public class RpcNioConnector extends BaseConnector {
     public RpcNioConnector(String host, int port, SerializableEncoder encoder, SerializableDecoder decoder) {
         super(host, port);
         this.selector = new RpcNioSelector(encoder, decoder);
+        this.stopExecutor = JdbcThreadPoolExecutor.newInstance(1, "RpcNioConnector.stop#" + host + ":" + port);
     }
 
     public RpcNioConnector(SocketChannel channel, JdbcSelector selector) {
@@ -83,6 +84,9 @@ public class RpcNioConnector extends BaseConnector {
             try {
                 channel.close();
                 selector.stop();
+                if (stopExecutor.isShutdown() || stopExecutor.isTerminated()) {
+                    return;
+                }
                 this.stopExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
