@@ -62,9 +62,8 @@ public abstract class UnregisteredDriver implements Driver {
         final String query = holder.connectUri.getQuery();
         parseQueryProperties(query, info);
         try {
-            Mode mode = Mode.fromKey(schema);
-            holder.mode = mode;
-            if (Mode.EMB.equals(mode)) {
+            holder.mode = Mode.fromKey(schema);
+            if (Mode.EMB.equals(holder.mode)) {
                 try {
                     Class clazz = Class.forName("com.fr.swift.jdbc.sql.EmbSwiftConnection");
                     Constructor constructor = clazz.getDeclaredConstructor(UnregisteredDriver.class, Properties.class);
