@@ -5,6 +5,7 @@ import com.fr.swift.basic.SwiftResponse;
 import com.fr.swift.jdbc.exception.Exceptions;
 import com.fr.swift.jdbc.rpc.JdbcConnector;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
+import com.fr.swift.log.SwiftLoggers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +21,13 @@ public abstract class BaseConnector implements JdbcConnector {
     private ConcurrentLinkedQueue<SwiftRequest> sendQueueCache = new ConcurrentLinkedQueue<SwiftRequest>();
     protected List<JdbcExecutor> rpcExecutors;
 
-    public BaseConnector(String host, int port) {
+    protected BaseConnector(String host, int port) {
         this.host = host;
         this.port = port == -1 ? 7000 : port;
         this.rpcExecutors = new ArrayList<JdbcExecutor>();
     }
 
-    public BaseConnector(String address) {
+    protected BaseConnector(String address) {
         String[] array = address.split(":");
         host = array[0];
         if (array.length > 1) {
@@ -35,7 +36,7 @@ public abstract class BaseConnector implements JdbcConnector {
         rpcExecutors = new ArrayList<JdbcExecutor>();
     }
 
-    public BaseConnector() {
+    protected BaseConnector() {
         rpcExecutors = new ArrayList<JdbcExecutor>();
     }
 
@@ -71,7 +72,7 @@ public abstract class BaseConnector implements JdbcConnector {
 
     @Override
     public void handlerException(Exception e) {
-//        SwiftLoggers.getLogger().error(e);
+        SwiftLoggers.getLogger().error(e);
         stop();
     }
 

@@ -38,7 +38,6 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
     private AtomicBoolean started = new AtomicBoolean(false);
     private SerializableEncoder encoder;
     private SerializableDecoder decoder;
-    private AtomicBoolean stop = new AtomicBoolean(true);
 
     public RpcNioSelector(SerializableEncoder encoder, SerializableDecoder decoder) {
         this.encoder = encoder;
@@ -116,17 +115,14 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
 
     @Override
     protected void setUpSelector() {
-        if (!started.get()) {
-            stop.set(false);
-            started.set(true);
+        if (started.compareAndSet(false, true)) {
             thread.start();
         }
     }
 
     @Override
     protected void shutdownSelector() {
-        stop.set(true);
-        started.set(false);
+        started.compareAndSet(true, false);
     }
 
     private boolean doAccept(SelectionKey selectionKey) {
@@ -153,7 +149,7 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
         RpcNioConnector connector = connectorCache.get(client);
         if (connector != null) {
             try {
-                while (!stop.get()) {
+                while (started.get()) {
                     try {
                         Object object = decoder.decodeFromChannel(client);
                         if (object instanceof SwiftResponse) {
@@ -218,13 +214,13 @@ public class RpcNioSelector extends BaseSelector<RpcNioConnector> {
 
     private class SelectionThread extends Thread {
 
-        public SelectionThread() {
+        SelectionThread() {
             super("swift-nio-rpc-selection-thread");
         }
 
         @Override
         public void run() {
-            while (!stop.get()) {
+            while (started.get()) {
                 if (RpcNioSelector.this.hasTask()) {
                     RpcNioSelector.this.runSelectTasks();
                 }

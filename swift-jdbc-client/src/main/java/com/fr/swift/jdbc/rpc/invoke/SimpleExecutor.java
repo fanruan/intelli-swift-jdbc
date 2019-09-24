@@ -16,20 +16,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * @date 2018/8/26
  */
 public class SimpleExecutor implements JdbcExecutor {
-    /**
-     * 默认超时30秒
-     */
-    private static final int DEFAULT_TIMEOUT = 30000;
     private int timeout;
     private JdbcConnector connector;
     private ReentrantLock lock;
     private Condition condition;
     private ConcurrentHashMap<String, CallBackSync> rpcCache = new ConcurrentHashMap<String, CallBackSync>();
-
-
-    public SimpleExecutor(JdbcConnector connector) {
-        this(connector, DEFAULT_TIMEOUT);
-    }
 
     public SimpleExecutor(JdbcConnector connector, int timeout) {
         this.timeout = timeout;
