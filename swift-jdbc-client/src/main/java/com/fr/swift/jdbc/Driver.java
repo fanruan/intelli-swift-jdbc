@@ -55,7 +55,7 @@ public class Driver extends UnregisteredDriver {
         JdbcExecutor executor = config.requestExecutor();
         ApiResponse response = holder.getRequestService().applyWithRetry(executor, JdbcJsonBuilder.buildAuthJson(config.swiftUser(), config.swiftPassword(), from), 3);
         if (response.isError()) {
-            throw Exceptions.sql(response.statusCode(), response.description());
+            throw Exceptions.sql(response.statusCode(), response.description(), response.getThrowable());
         }
         executor.stop();
         // 结果应该包括用户校验码以及 realtime和analyse服务的地址

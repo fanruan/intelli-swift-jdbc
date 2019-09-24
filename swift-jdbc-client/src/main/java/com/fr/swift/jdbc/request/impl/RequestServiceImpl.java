@@ -2,12 +2,12 @@ package com.fr.swift.jdbc.request.impl;
 
 import com.fr.swift.api.server.ApiServerService;
 import com.fr.swift.api.server.response.ApiResponse;
+import com.fr.swift.api.server.response.ApiResponseImpl;
 import com.fr.swift.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.jdbc.request.JdbcRequestService;
 import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.jdbc.rpc.invoke.ClientProxy;
 
-import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,44 +43,11 @@ public class RequestServiceImpl implements JdbcRequestService {
                 if (!response.isError()) {
                     return response;
                 }
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.SECONDS.sleep(5);
             } catch (final Exception e) {
-                return new ApiResponse() {
-                    @Override
-                    public int statusCode() {
-                        return UNKNOWN_ERROR;
-                    }
-
-                    @Override
-                    public String description() {
-                        return e.getMessage();
-                    }
-
-                    @Override
-                    public boolean isError() {
-                        return true;
-                    }
-
-                    @Override
-                    public Serializable result() {
-                        return null;
-                    }
-
-                    @Override
-                    public void setResult(Serializable result) {
-
-                    }
-
-                    @Override
-                    public void setThrowable(Throwable throwable) {
-
-                    }
-
-                    @Override
-                    public void setStatusCode(int statusCode) {
-
-                    }
-                };
+                final ApiResponseImpl apiResponse = new ApiResponseImpl(e);
+                apiResponse.setStatusCode(ApiResponse.UNKNOWN_ERROR);
+                return apiResponse;
             }
         }
         return response;

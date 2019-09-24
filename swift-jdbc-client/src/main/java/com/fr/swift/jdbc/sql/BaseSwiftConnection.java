@@ -112,7 +112,7 @@ public abstract class BaseSwiftConnection implements SwiftConnection {
 
     @Override
     public boolean getAutoCommit() {
-        return false;
+        return true;
     }
 
     @Override
@@ -292,12 +292,11 @@ public abstract class BaseSwiftConnection implements SwiftConnection {
 
     @Override
     public void setClientInfo(String name, String value) {
-
     }
 
     @Override
     public String getClientInfo(String name) {
-        return null;
+        return "Swift-jdbc-client-1.1";
     }
 
     @Override
@@ -359,7 +358,7 @@ public abstract class BaseSwiftConnection implements SwiftConnection {
         // 这边不等了 有Netty的可以用netty的请求，没netty的还是走原来的不稳定的rpc
         ApiResponse response = driver.holder.getRequestService().applyWithRetry(executor, sql, 3);
         if (response.isError()) {
-            throw Exceptions.sql(response.statusCode(), response.description());
+            throw Exceptions.sql(response.statusCode(), response.description(), response.getThrowable());
         }
         return response.result();
     }
