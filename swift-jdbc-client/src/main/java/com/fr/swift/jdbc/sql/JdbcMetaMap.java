@@ -1,5 +1,6 @@
 package com.fr.swift.jdbc.sql;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,13 +73,13 @@ public enum JdbcMetaMap {
     protected Map<String, Integer> metaMap;
 
     JdbcMetaMap() {
-        metaMap = new HashMap<>();
+        metaMap = new HashMap<String, Integer>();
         init();
     }
 
     protected abstract void init();
 
     public Map<String, Integer> getMetaMap() {
-        return metaMap;
+        return Collections.unmodifiableMap(metaMap);
     }
 }
