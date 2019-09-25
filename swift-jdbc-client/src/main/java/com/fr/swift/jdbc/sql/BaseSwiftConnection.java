@@ -296,7 +296,7 @@ public abstract class BaseSwiftConnection implements SwiftConnection {
 
     @Override
     public String getClientInfo(String name) {
-        return "Swift-jdbc-client-1.1";
+        return "Swift-jdbc-client";
     }
 
     @Override
