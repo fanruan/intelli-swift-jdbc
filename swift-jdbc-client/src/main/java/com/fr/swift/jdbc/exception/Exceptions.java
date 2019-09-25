@@ -23,8 +23,12 @@ public final class Exceptions {
         return new SQLException(msg);
     }
 
-    public static SQLException sql(int statusCode, String msg) {
-        return new SQLException(String.format("Error code: %d, %s", statusCode, msg));
+    public static SQLException sql(int statusCode, String msg, Throwable t) {
+        if (null != t) {
+            return new SQLException(String.format("Error code: %d, %s", statusCode, msg), t);
+        } else {
+            return new SQLException(String.format("Error code: %d, %s", statusCode, msg));
+        }
     }
 
     public static RuntimeException runtime(String msg) {

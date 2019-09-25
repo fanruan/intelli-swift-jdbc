@@ -6,9 +6,6 @@ import com.fr.swift.jdbc.rpc.impl.NettyJdbcExecutorCreator;
 import com.fr.swift.jdbc.rpc.impl.SimpleJdbcExecutorCreator;
 import com.fr.swift.log.SwiftLoggers;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.Properties;
 
 /**
@@ -35,19 +32,12 @@ public class RemoteConnection extends BaseSwiftConnection {
     }
 
     private void init() {
-        executorCreator = (JdbcExecutorCreator) Proxy.newProxyInstance(RemoteConnection.class.getClassLoader(), new Class[]{JdbcExecutorCreator.class}, new InvocationHandler() {
-            private NettyJdbcExecutorCreator nettyCreator = new NettyJdbcExecutorCreator();
-            private SimpleJdbcExecutorCreator simpleCreator = new SimpleJdbcExecutorCreator();
-
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                try {
-                    return method.invoke(nettyCreator, args);
-                } catch (Exception e) {
-                    SwiftLoggers.getLogger().warn("Invoke NettyCreator Error. Using default", e);
-                    return method.invoke(simpleCreator, args);
-                }
-            }
-        });
+        try {
+            Class.forName("io.netty.bootstrap.Bootstrap");
+            executorCreator = new NettyJdbcExecutorCreator();
+        } catch (ClassNotFoundException e) {
+            SwiftLoggers.getLogger().warn("Netty not found. Using default jdbc executor creator");
+            executorCreator = new SimpleJdbcExecutorCreator();
+        }
     }
 }

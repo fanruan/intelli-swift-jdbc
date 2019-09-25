@@ -58,28 +58,27 @@ public abstract class UnregisteredDriver implements Driver {
         if (null == schema) {
             throw Exceptions.urlFormat(url);
         }
-        Mode mode;
-        try {
-            mode = Mode.fromKey(schema);
-            holder.mode = mode;
-        } catch (Exception e) {
-            throw Exceptions.urlFormat(url);
-        }
+
         final String query = holder.connectUri.getQuery();
         parseQueryProperties(query, info);
-        if (Mode.EMB.equals(mode)) {
-            try {
-                Class clazz = Class.forName("com.fr.swift.jdbc.sql.EmbSwiftConnection");
-                Constructor constructor = clazz.getDeclaredConstructor(UnregisteredDriver.class, Properties.class);
-                constructor.setAccessible(true);
-                return (Connection) constructor.newInstance(this, info);
-            } catch (Exception e) {
-                throw Exceptions.environment(e);
+        try {
+            holder.mode = Mode.fromKey(schema);
+            if (Mode.EMB.equals(holder.mode)) {
+                try {
+                    Class clazz = Class.forName("com.fr.swift.jdbc.sql.EmbSwiftConnection");
+                    Constructor constructor = clazz.getDeclaredConstructor(UnregisteredDriver.class, Properties.class);
+                    constructor.setAccessible(true);
+                    return (Connection) constructor.newInstance(this, info);
+                } catch (Exception e) {
+                    throw Exceptions.environment(e);
+                }
+            } else {
+                return new RemoteConnection(this, info);
             }
-        } else {
-            return new RemoteConnection(this, info);
+        } catch (IllegalArgumentException e) {
+            // fromKey 抛的
+            throw Exceptions.urlFormat(url);
         }
-
     }
 
     @Override
@@ -191,8 +190,7 @@ public abstract class UnregisteredDriver implements Driver {
             this.analyseAddresses = analyseAddresses;
         }
 
-        synchronized
-        public String nextRealTime() {
+        synchronized String nextRealTime() {
             if (mode.equals(Mode.EMB)) {
                 return "default";
             }
@@ -204,8 +202,7 @@ public abstract class UnregisteredDriver implements Driver {
             return address;
         }
 
-        synchronized
-        public String nextAnalyse() {
+        synchronized String nextAnalyse() {
             if (mode.equals(Mode.EMB)) {
                 return "default";
             }
