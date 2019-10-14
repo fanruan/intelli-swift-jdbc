@@ -154,7 +154,9 @@ public class DataMaintenanceServiceImpl implements DataMaintenanceService {
 
         @Override
         public Row getNextRow() {
-            return rows.get(cursor++);
+            final Row row = rows.get(cursor);
+            cursor++;
+            return row;
         }
 
         @Override
