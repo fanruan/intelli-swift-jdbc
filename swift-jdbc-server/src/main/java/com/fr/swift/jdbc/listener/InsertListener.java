@@ -32,6 +32,9 @@ public class InsertListener extends SwiftSqlParserBaseListener implements Insert
         List<String> fields = new ArrayList<>();
         List<SwiftMetaDataColumn> metaDataColumns = new ArrayList<>();
         SwiftMetaData metaData = metaDataService.getMetaDataByKey(tableName);
+        if (null == metaData) {
+            visitErrorNode(new ErrorNodeImpl(ctx.table.start));
+        }
         try {
             if (ctx.columnNames != null) {
                 for (SwiftSqlParser.NameContext nameContext : ctx.columnNames.name()) {
