@@ -1,5 +1,6 @@
 package com.fr.swift.jdbc.visitor.select;
 
+import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.visitor.BaseVisitor;
 import com.fr.swift.query.info.bean.element.SortBean;
@@ -36,7 +37,7 @@ public class OrderByVisitor extends BaseVisitor<List<SortBean>> {
 
         @Override
         public SortBean visitChildren(RuleNode node) {
-            sortBean = new SortBean(SortType.ASC, node.getText());
+            sortBean = new SortBean(SortType.ASC, SwiftSqlParseUtil.trimQuote(node.getText()));
             return sortBean;
         }
 
