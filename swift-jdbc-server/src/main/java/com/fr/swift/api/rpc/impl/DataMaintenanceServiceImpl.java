@@ -10,7 +10,6 @@ import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftAutoWired;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.db.SwiftSchema;
-import com.fr.swift.db.Table;
 import com.fr.swift.db.Where;
 import com.fr.swift.event.global.DeleteEvent;
 import com.fr.swift.exception.meta.SwiftMetaDataException;
@@ -102,7 +101,7 @@ public class DataMaintenanceServiceImpl implements DataMaintenanceService {
             if (null == metaData) {
                 return 0;
             }
-            Table table = com.fr.swift.db.impl.SwiftDatabase.getInstance().getTable(new SourceKey(metaData.getId()));
+//            Table table = com.fr.swift.db.impl.SwiftDatabase.getInstance().getTable(new SourceKey(metaData.getId()));
             throw new UnsupportedOperationException();
 //            return table.update(where, resultSet);
         } catch (Exception e) {

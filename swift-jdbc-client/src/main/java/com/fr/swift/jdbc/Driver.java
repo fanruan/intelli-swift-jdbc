@@ -57,6 +57,7 @@ public class Driver extends UnregisteredDriver {
         if (response.isError()) {
             throw Exceptions.sql(response.statusCode(), response.description(), response.getThrowable());
         }
+
         executor.stop();
         // 结果应该包括用户校验码以及 realtime和analyse服务的地址
         AuthResponse result = (AuthResponse) response.result();
