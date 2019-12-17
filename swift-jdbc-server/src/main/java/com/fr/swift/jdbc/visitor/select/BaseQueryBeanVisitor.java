@@ -26,6 +26,8 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
 
     protected abstract DimensionBean visitToDate(SwiftSqlParser.FuncExprContext ctx);
 
+    protected Map<String, Integer> nameMap = new HashMap<>();
+
 
     protected void visitColumns(SwiftSqlParser.ColumnsContext columns,
                                 List<DimensionBean> dimensionBeans,
@@ -34,7 +36,6 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
         boolean dimension = true;
         DimensionBean aliasDimension = null;
         AggregationBean aliasAggregation = null;
-        Map<String, Integer> nameMap = new HashMap<>();
         for (int i = 0; i < childCount; i++) {
             ParseTree child = columns.getChild(i);
             if (child instanceof SwiftSqlParser.SimpleExprContext) {
@@ -84,7 +85,7 @@ public abstract class BaseQueryBeanVisitor<T extends QueryInfoBean> extends Base
         }
     }
 
-    private String rename(Map<String, Integer> nameMap, String alias) {
+    String rename(Map<String, Integer> nameMap, String alias) {
         if (nameMap.containsKey(alias)) {
             int newCount = nameMap.get(alias) + 1;
             nameMap.put(alias, newCount);

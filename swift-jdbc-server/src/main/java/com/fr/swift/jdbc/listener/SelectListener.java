@@ -1,5 +1,7 @@
 package com.fr.swift.jdbc.listener;
 
+import com.fr.swift.SwiftContext;
+import com.fr.swift.config.service.SwiftMetaDataService;
 import com.fr.swift.jdbc.adaptor.SelectionBeanParser;
 import com.fr.swift.jdbc.adaptor.bean.SelectionBean;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
@@ -21,7 +23,9 @@ import com.fr.swift.query.info.bean.post.PostQueryInfoBean;
 import com.fr.swift.query.info.bean.query.DetailQueryInfoBean;
 import com.fr.swift.query.info.bean.query.GroupQueryInfoBean;
 import com.fr.swift.query.info.bean.query.QueryInfoBean;
+import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.util.Strings;
+import org.antlr.v4.runtime.tree.ErrorNodeImpl;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -37,6 +41,7 @@ import java.util.Map;
  */
 public class SelectListener extends SwiftSqlParserBaseListener implements SelectionBeanParser {
     private QueryInfoBean bean;
+    private SwiftMetaDataService metaDataService = SwiftContext.get().getBean(SwiftMetaDataService.class);
 
     @Override
     public void enterSelect(SwiftSqlParser.SelectContext ctx) {
@@ -45,6 +50,10 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
             ParseTree child = ctx.getChild(1);
             boolean distinct = child instanceof TerminalNode && ((TerminalNode) child).getSymbol().getType() == SwiftSqlParser.DISTINCT;
             String tableName = SwiftSqlParseUtil.trimQuote(ctx.table.getText());
+            SwiftMetaData metaData = metaDataService.getMetaDataByKey(tableName);
+            if (null == metaData) {
+                visitErrorNode(new ErrorNodeImpl(ctx.table.start));
+            }
             FilterInfoBean filter = null;
             if (ctx.where != null) {
                 List<FilterInfoBean> filters = new ArrayList<>();
@@ -57,7 +66,7 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                 filter = filters.size() == 1 ? filters.get(0) : ComplexFilterInfoBean.and(filters);
             }
 
-            bean = null != ctx.groupBy || distinct ? ctx.accept(new GroupByVisitor(tableName, filter, ctx.columns()))
+            bean = null != ctx.groupBy || distinct ? ctx.accept(new GroupByVisitor(tableName, metaData, filter, ctx.columns()))
                     : ctx.accept(new NoGroupByVisitor(tableName, filter, ctx.columns()));
         }
     }
