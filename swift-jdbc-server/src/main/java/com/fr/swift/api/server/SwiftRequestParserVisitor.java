@@ -22,7 +22,7 @@ import com.fr.swift.api.rpc.bean.Column;
 import com.fr.swift.api.server.exception.ApiCrasher;
 import com.fr.swift.api.server.response.error.ParamErrorCode;
 import com.fr.swift.base.json.JsonBuilder;
-import com.fr.swift.db.SwiftSchema;
+import com.fr.swift.db.SwiftDatabase;
 import com.fr.swift.db.impl.SwiftWhere;
 import com.fr.swift.jdbc.adaptor.bean.ColumnBean;
 import com.fr.swift.jdbc.adaptor.bean.CreationBean;
@@ -55,7 +55,7 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
 
     private static void setProperties(TableRequestInfo requestInfo, String authCode, String schema, String tableName) {
         requestInfo.setAuthCode(authCode);
-        requestInfo.setDatabase(SwiftSchema.fromKey(schema));
+        requestInfo.setDatabase(SwiftDatabase.fromKey(schema));
         requestInfo.setTable(tableName);
     }
 
@@ -80,7 +80,7 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
                     ApiCrasher.crash(ParamErrorCode.PARAMS_PARSER_ERROR);
                 }
                 result[0] = createApiInvocation("query", SelectService.class,
-                        SwiftSchema.fromKey(schema[0]), queryJson);
+                        SwiftDatabase.fromKey(schema[0]), queryJson);
             }
 
             @Override
@@ -125,7 +125,7 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
                 if (Strings.isNotEmpty(bean.getSchema())) {
                     schema[0] = bean.getSchema();
                 }
-                result[0] = createApiInvocation("truncateTable", TableService.class, SwiftSchema.fromKey(schema[0]), bean.getTableName());
+                result[0] = createApiInvocation("truncateTable", TableService.class, SwiftDatabase.fromKey(schema[0]), bean.getTableName());
             }
 
             @Override
@@ -151,14 +151,14 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
     public ApiInvocation visit(ColumnsRequestInfo columnsRequestInfo) {
         String database = columnsRequestInfo.getDatabase();
         String table = columnsRequestInfo.getTable();
-        SwiftSchema swiftSchema = SwiftSchema.fromKey(database);
+        SwiftDatabase swiftSchema = SwiftDatabase.fromKey(database);
         return createApiInvocation("detectiveMetaData", TableService.class, swiftSchema, table);
     }
 
     @Override
     public ApiInvocation visit(TablesRequestInfo tablesRequestInfo) {
         String database = tablesRequestInfo.getDatabase();
-        SwiftSchema swiftSchema = SwiftSchema.fromKey(database);
+        SwiftDatabase swiftSchema = SwiftDatabase.fromKey(database);
         return createApiInvocation("detectiveAllTable", TableService.class, swiftSchema);
     }
 
