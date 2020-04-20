@@ -23,6 +23,7 @@ import com.fr.swift.query.info.bean.post.PostQueryInfoBean;
 import com.fr.swift.query.info.bean.query.DetailQueryInfoBean;
 import com.fr.swift.query.info.bean.query.GroupQueryInfoBean;
 import com.fr.swift.query.info.bean.query.QueryInfoBean;
+import com.fr.swift.source.SourceKey;
 import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.util.Strings;
 import org.antlr.v4.runtime.tree.ErrorNodeImpl;
@@ -50,7 +51,7 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
             ParseTree child = ctx.getChild(1);
             boolean distinct = child instanceof TerminalNode && ((TerminalNode) child).getSymbol().getType() == SwiftSqlParser.DISTINCT;
             String tableName = SwiftSqlParseUtil.trimQuote(ctx.table.getText());
-            SwiftMetaData metaData = metaDataService.getMetaDataByKey(tableName);
+            SwiftMetaData metaData = metaDataService.getMeta(new SourceKey(tableName));
             if (null == metaData) {
                 visitErrorNode(new ErrorNodeImpl(ctx.table.start));
             }
