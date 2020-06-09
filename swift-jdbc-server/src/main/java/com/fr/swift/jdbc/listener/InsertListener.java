@@ -10,6 +10,7 @@ import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParserBaseListener;
 import com.fr.swift.jdbc.visitor.insert.InsertValueVisitor;
 import com.fr.swift.source.Row;
+import com.fr.swift.source.SourceKey;
 import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.source.SwiftMetaDataColumn;
 import org.antlr.v4.runtime.tree.ErrorNodeImpl;
@@ -31,7 +32,7 @@ public class InsertListener extends SwiftSqlParserBaseListener implements Insert
         String tableName = ctx.name().getText();
         List<String> fields = new ArrayList<>();
         List<SwiftMetaDataColumn> metaDataColumns = new ArrayList<>();
-        SwiftMetaData metaData = metaDataService.getMetaDataByKey(tableName);
+        SwiftMetaData metaData = metaDataService.getMeta(new SourceKey(tableName));
         if (null == metaData) {
             visitErrorNode(new ErrorNodeImpl(ctx.table.start));
         }
