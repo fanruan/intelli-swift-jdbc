@@ -5,7 +5,6 @@ import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.rpc.DataMaintenanceService;
 import com.fr.swift.api.rpc.SelectService;
 import com.fr.swift.api.rpc.TableService;
-import com.fr.swift.base.json.JsonBuilder;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.config.entity.SwiftMetaDataEntity;
@@ -14,13 +13,11 @@ import com.fr.swift.db.Table;
 import com.fr.swift.db.Where;
 import com.fr.swift.exception.meta.SwiftMetaDataException;
 import com.fr.swift.result.SwiftResultSet;
-import com.fr.swift.service.ServiceContext;
 import com.fr.swift.source.Row;
 import com.fr.swift.source.SourceKey;
 import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.source.SwiftMetaDataColumn;
 
-import javax.transaction.NotSupportedException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +79,7 @@ public class DataMaintenanceServiceImpl implements DataMaintenanceService {
 //            } else {
 //                SwiftServiceListenerManager.getInstance().triggerEvent(event);
 //            }
-            SwiftContext.get().getBean(ServiceContext.class).delete(new SourceKey(tableName), where);
+//            SwiftContext.get().getBean(ServiceContext.class).delete(new SourceKey(tableName), where);
             return 1;
         } catch (Exception e) {
             throw new SQLException("Table which named " + tableName + " is not exists", e);
