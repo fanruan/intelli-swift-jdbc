@@ -37,8 +37,8 @@ import com.fr.swift.jdbc.listener.handler.SwiftSqlBeanHandler;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
 import com.fr.swift.query.info.bean.query.QueryInfoBean;
 import com.fr.swift.util.Crasher;
-import com.fr.swift.util.ReflectUtils;
 import com.fr.swift.util.Strings;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -169,7 +169,7 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
             if (method1.getName().equals(method) && paramTypes.length == arguments.length) {
                 boolean match = true;
                 for (int i = 0; i < paramTypes.length; i++) {
-                    if (null != arguments[i] && !ReflectUtils.isAssignable(arguments[i].getClass(), paramTypes[i])) {
+                    if (null != arguments[i] && !ClassUtils.isAssignable(arguments[i].getClass(), paramTypes[i])) {
                         match = false;
                         break;
                     }
