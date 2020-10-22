@@ -8,6 +8,7 @@ import com.fr.swift.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.jdbc.sql.BaseSwiftConnection;
 import com.fr.swift.jdbc.sql.ConnectionConfig;
 import com.fr.swift.jdbc.sql.UnregisteredDriver;
+import com.fr.swift.log.SwiftLoggers;
 
 import java.io.File;
 import java.sql.Connection;
@@ -53,6 +54,7 @@ public class Driver extends UnregisteredDriver {
         }
         String from = holder.getConnectUri().getHost() + ":" + holder.getConnectUri().getPort();
         JdbcExecutor executor = config.requestExecutor();
+        SwiftLoggers.getLogger().info("jdbc username :"+config.swiftUser());
         ApiResponse response = holder.getRequestService().applyWithRetry(executor, JdbcJsonBuilder.buildAuthJson(config.swiftUser(), config.swiftPassword(), from), 3);
         if (response.isError()) {
             throw Exceptions.sql(response.statusCode(), response.description());

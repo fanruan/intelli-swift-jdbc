@@ -6,6 +6,7 @@ import com.fr.swift.api.info.ApiInvocation;
 import com.fr.swift.api.info.RequestInfo;
 import com.fr.swift.api.server.exception.ApiCrasher;
 import com.fr.swift.api.server.exception.ApiRequestRuntimeException;
+import com.fr.swift.api.server.exception.ApiUserPasswordException;
 import com.fr.swift.api.server.response.ApiResponse;
 import com.fr.swift.api.server.response.ApiResponseImpl;
 import com.fr.swift.api.server.response.error.ParamErrorCode;
@@ -18,6 +19,7 @@ import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.service.ServiceContext;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -45,7 +47,11 @@ public class ApiServerServiceImpl implements ApiServerService {
             SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, re);
             response.setThrowable(re);
             response.setStatusCode(re.getStatusCode());
-        } catch (Exception e) {
+        } catch (ApiUserPasswordException ue) {
+            SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, ue);
+            response.setThrowable(ue);
+            response.setStatusCode(ParamErrorCode.USER_PASSWORD_ERROR);
+        } catch (Throwable e) {
             SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, e);
             response.setThrowable(e);
             response.setStatusCode(ParamErrorCode.PARAMS_PARSER_ERROR);
@@ -58,7 +64,7 @@ public class ApiServerServiceImpl implements ApiServerService {
         SwiftContext.get().getBean(ServiceContext.class).clearQuery(queryId);
     }
 
-    private Object invokeRequest(ApiInvocation invocation) {
+    private Object invokeRequest(ApiInvocation invocation) throws Throwable {
         Class<?> aClass = invocation.getTarget();
         Class<?>[] parameterTypes = invocation.getParameterTypes();
         Object[] arguments = invocation.getArguments();
@@ -66,6 +72,12 @@ public class ApiServerServiceImpl implements ApiServerService {
         try {
             Method method = aClass.getMethod(methodName, parameterTypes);
             return method.invoke(ProxyServiceRegistry.get().getExternalService(aClass), arguments);
+        } catch (InvocationTargetException ie) {
+            if(ie.getTargetException().getClass() == ApiUserPasswordException.class) {
+                throw ie.getTargetException();
+            } else {
+                return ApiCrasher.crash(ServerErrorCode.SERVER_INVOKE_ERROR, ie);
+            }
         } catch (Exception e) {
             return ApiCrasher.crash(ServerErrorCode.SERVER_INVOKE_ERROR, e);
         }

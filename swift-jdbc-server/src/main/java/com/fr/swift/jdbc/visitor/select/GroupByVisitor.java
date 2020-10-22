@@ -129,7 +129,7 @@ public class GroupByVisitor extends BaseQueryBeanVisitor<GroupQueryInfoBean> {
             final SwiftMetaDataColumn metaDataColumn = metaData.getColumn(column);
             AggregationBean bean = null;
             if (ColumnTypeUtils.getClassType(metaDataColumn) == ColumnTypeConstants.ClassType.STRING) {
-                bean = MetricBean.builder(column, AggregatorType.SINGLE_VALUE).build();
+                bean = MetricBean.builder(column, AggregatorType.DISTINCT).build();
                 bean.setAlias(rename(nameMap, column));
             } else {
                 bean = MetricBean.builder(column, AggregatorType.COUNT).build();

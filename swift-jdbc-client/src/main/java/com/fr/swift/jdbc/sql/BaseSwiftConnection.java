@@ -392,7 +392,7 @@ public abstract class BaseSwiftConnection implements Connection {
 
         @Override
         public String swiftUser() {
-            return BuildInConnectionProperty.USERNAME.getValue(properties);
+            return BuildInConnectionProperty.USER.getValue(properties);
         }
 
         @Override
