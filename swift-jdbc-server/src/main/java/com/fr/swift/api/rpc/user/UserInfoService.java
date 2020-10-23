@@ -18,11 +18,11 @@ public class UserInfoService {
     public static boolean verify(String username, String password) {
         String hql = "select a from SwiftUserInfo a where a.username = :username";
         final List<?> select = dao.select(hql, query -> query.setParameter("username", username));
-        String authCode = ((SwiftUserInfo)select.get(0)).getPassword();
+        String authCode = ((SwiftUserInfo) select.get(0)).getPassword();
         return authCode.equals(MD5Utils.getMD5String(new String[]{password}));
     }
 
     public static void insert(String username, String password, UserPermission scheme) {
-        dao.insert(new SwiftUserInfo(username,password,scheme));
+        dao.insert(new SwiftUserInfo(username, password, scheme));
     }
 }

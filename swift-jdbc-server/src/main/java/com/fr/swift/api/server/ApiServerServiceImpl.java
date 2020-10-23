@@ -73,7 +73,7 @@ public class ApiServerServiceImpl implements ApiServerService {
             Method method = aClass.getMethod(methodName, parameterTypes);
             return method.invoke(ProxyServiceRegistry.get().getExternalService(aClass), arguments);
         } catch (InvocationTargetException ie) {
-            if(ie.getTargetException().getClass() == ApiUserPasswordException.class) {
+            if (ie.getTargetException().getClass() == ApiUserPasswordException.class) {
                 throw ie.getTargetException();
             } else {
                 return ApiCrasher.crash(ServerErrorCode.SERVER_INVOKE_ERROR, ie);

@@ -28,7 +28,7 @@ public class DetectServiceImpl implements DetectService {
     public AuthResponse detectiveAnalyseAndRealTime(String defaultAddress, String username, String password) {
         String authCode = MD5Utils.getMD5String(new String[]{username, password});
         AuthResponseImpl response = new AuthResponseImpl();
-        if (!UserInfoService.verify(username,password)) {
+        if (!UserInfoService.verify(username, password)) {
             throw new ApiUserPasswordException("jdbc username or password error!");
         }
         response.setAuthCode(authCode);
