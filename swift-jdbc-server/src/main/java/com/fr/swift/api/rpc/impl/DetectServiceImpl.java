@@ -8,12 +8,13 @@ import com.fr.swift.api.server.response.AuthResponse;
 import com.fr.swift.api.server.response.AuthResponseImpl;
 import com.fr.swift.basics.annotation.ProxyService;
 import com.fr.swift.beans.annotation.SwiftBean;
-//import com.fr.swift.event.global.GetAnalyseAndRealTimeAddrEvent;
 import com.fr.swift.log.SwiftLoggers;
-//import com.fr.swift.service.listener.RemoteSender;
 import com.fr.swift.source.core.MD5Utils;
 
 import java.util.Collections;
+
+//import com.fr.swift.event.global.GetAnalyseAndRealTimeAddrEvent;
+//import com.fr.swift.service.listener.RemoteSender;
 
 /**
  * @author yee
@@ -23,6 +24,7 @@ import java.util.Collections;
 @SwiftApi
 @SwiftBean
 public class DetectServiceImpl implements DetectService {
+
     @Override
     @SwiftApi
     public AuthResponse detectiveAnalyseAndRealTime(String defaultAddress, String username, String password) {
