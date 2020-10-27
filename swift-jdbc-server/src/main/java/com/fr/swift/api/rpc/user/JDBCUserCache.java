@@ -1,10 +1,9 @@
 package com.fr.swift.api.rpc.user;
 
-import com.fr.swift.log.SwiftLoggers;
-
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -15,22 +14,19 @@ import java.util.concurrent.TimeUnit;
  */
 public enum JDBCUserCache {
     INSTANCE;
-    private long cacheTime = 36000000L;
+    private long cacheTime = TimeUnit.HOURS.toMillis(1);
     private final Map<String, JDBCUserInfo> userMap = new ConcurrentHashMap<>();
     private ScheduledExecutorService scheduledPool = new ScheduledThreadPoolExecutor(1);
-    private PriorityBlockingQueue<String> userQueue = new PriorityBlockingQueue<>();
 
     JDBCUserCache() {
         scheduledPool.scheduleWithFixedDelay(() -> {
             long now = System.currentTimeMillis();
-            while (true) {
-                String userName = userQueue.peek();
-                if (userName == null || userMap.get(userName).getCreateTime().getTime() + cacheTime > now) {
-                    return;
+            Iterator<Map.Entry<String, JDBCUserInfo>> iterator = userMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, JDBCUserInfo> next = iterator.next();
+                if (next.getValue().getCreateTime().getTime() + cacheTime > now) {
+                    iterator.remove();
                 }
-                userMap.remove(userName);
-                String deleteUser = userQueue.poll();
-                SwiftLoggers.getLogger().info("delete user in cache:" + deleteUser);
             }
         }, 1, 1, TimeUnit.MINUTES);
     }
@@ -38,25 +34,18 @@ public enum JDBCUserCache {
     public void put(String userName, JDBCUserInfo jdbcUserInfo) {
         if (userMap.containsKey(userName)) {
             userMap.put(userName, jdbcUserInfo);
-            userQueue.remove(userName);
         }
         userMap.put(userName, jdbcUserInfo);
-        userQueue.add(userName);
     }
 
     public JDBCUserInfo get(String userName) {
         JDBCUserInfo jdbcUserInfo = userMap.get(userName);
-        if (jdbcUserInfo != null && jdbcUserInfo.getCreateTime().getTime() + cacheTime > System.currentTimeMillis()) {
+        long now = System.currentTimeMillis();
+        if (jdbcUserInfo != null && jdbcUserInfo.getCreateTime().getTime() + cacheTime < now) {
+            jdbcUserInfo.setCreateTime(new Date(now));
             return jdbcUserInfo;
         }
         return null;
-    }
-
-    public boolean containUser(String userName) {
-        if (get(userName) != null) {
-            return true;
-        }
-        return false;
     }
 
 }
