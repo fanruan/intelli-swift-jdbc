@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
  */
 public enum JDBCUserCache {
     INSTANCE;
-    private long CACHE_TIME = 36000000L;
-    private final Map<String, JDBCUserInfo> USER_MAP = new ConcurrentHashMap<>();
+    private long cacheTime = 36000000L;
+    private final Map<String, JDBCUserInfo> userMap = new ConcurrentHashMap<>();
     private ScheduledExecutorService scheduledPool = new ScheduledThreadPoolExecutor(1);
     private PriorityBlockingQueue<String> userQueue = new PriorityBlockingQueue<>();
 
@@ -25,10 +25,10 @@ public enum JDBCUserCache {
             long now = System.currentTimeMillis();
             while (true) {
                 String userName = userQueue.peek();
-                if (userName == null || USER_MAP.get(userName).getCreateTime().getTime() + CACHE_TIME > now) {
+                if (userName == null || userMap.get(userName).getCreateTime().getTime() + cacheTime > now) {
                     return;
                 }
-                USER_MAP.remove(userName);
+                userMap.remove(userName);
                 String deleteUser = userQueue.poll();
                 SwiftLoggers.getLogger().info("delete user in cache:" + deleteUser);
             }
@@ -36,17 +36,17 @@ public enum JDBCUserCache {
     }
 
     public void put(String userName, JDBCUserInfo jdbcUserInfo) {
-        if (USER_MAP.containsKey(userName)) {
-            USER_MAP.put(userName, jdbcUserInfo);
+        if (userMap.containsKey(userName)) {
+            userMap.put(userName, jdbcUserInfo);
             userQueue.remove(userName);
         }
-        USER_MAP.put(userName, jdbcUserInfo);
+        userMap.put(userName, jdbcUserInfo);
         userQueue.add(userName);
     }
 
     public JDBCUserInfo get(String userName) {
-        JDBCUserInfo jdbcUserInfo = USER_MAP.get(userName);
-        if (jdbcUserInfo != null && jdbcUserInfo.getCreateTime().getTime() + CACHE_TIME > System.currentTimeMillis()) {
+        JDBCUserInfo jdbcUserInfo = userMap.get(userName);
+        if (jdbcUserInfo != null && jdbcUserInfo.getCreateTime().getTime() + cacheTime > System.currentTimeMillis()) {
             return jdbcUserInfo;
         }
         return null;
