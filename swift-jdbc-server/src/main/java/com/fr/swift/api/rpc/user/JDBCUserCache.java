@@ -41,7 +41,7 @@ public enum JDBCUserCache {
     public JDBCUserInfo get(String userName) {
         JDBCUserInfo jdbcUserInfo = userMap.get(userName);
         long now = System.currentTimeMillis();
-        if (jdbcUserInfo != null && jdbcUserInfo.getCreateTime().getTime() + cacheTime < now) {
+        if (jdbcUserInfo != null && jdbcUserInfo.getCreateTime().getTime() + cacheTime > now) {
             jdbcUserInfo.setCreateTime(new Date(now));
             return jdbcUserInfo;
         }
