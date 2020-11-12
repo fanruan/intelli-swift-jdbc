@@ -1,5 +1,6 @@
 package com.fr.swift.api.server;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fr.swift.SwiftContext;
 import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.info.ApiInvocation;
@@ -37,7 +38,11 @@ public class ApiServerServiceImpl implements ApiServerService {
     @SwiftApi
     public ApiResponse dispatchRequest(String request) {
         ApiResponse response = new ApiResponseImpl();
-        SwiftLoggers.getLogger().info("Receive jdbc request body {}", request);
+        JSONObject jsonRequest = JSONObject.parseObject(request);
+        SwiftLoggers.getLogger().info("Receive jdbc request user :" + jsonRequest.get("swiftUser")
+                + " requestId: " + jsonRequest.get("requestId")
+                + " requestType: " + jsonRequest.get("requestType")
+                + " sql: " + jsonRequest.get("sql"));
         try {
             RequestInfo requestInfo = JsonBuilder.readValue(request, RequestInfo.class);
             ApiInvocation invocation = requestInfo.accept(new SwiftRequestParserVisitor());
