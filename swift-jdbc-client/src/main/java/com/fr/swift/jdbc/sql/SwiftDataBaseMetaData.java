@@ -724,7 +724,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         ConnectionConfig config = connection.getConfig();
         List<Row> fields = new ArrayList<Row>();
         try {
-            String requestJson = JsonBuilder.writeJsonString(new ColumnsRequestInfo(config.swiftDatabase(), tableNamePattern, connection.driver.holder.getAuthCode()));
+            String requestJson = JsonBuilder.writeJsonString(new ColumnsRequestInfo(config.swiftDatabase(), config.swiftUser()));
             ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(config.requestExecutor(), requestJson, 3);
             if (response.isError()) {
                 throw Exceptions.sql(response.statusCode(), response.description());
