@@ -102,7 +102,7 @@ public class SwiftRequestParserVisitorTest extends TestCase {
     }
 
     public void testVisitColumnsRequestInfo() throws Exception {
-        ColumnsRequestInfo columnsRequestInfo = new ColumnsRequestInfo("cube", "a", "authCode");
+        ColumnsRequestInfo columnsRequestInfo = new ColumnsRequestInfo("cube", "a");
         ApiInvocation invocation = columnsRequestInfo.accept(new SwiftRequestParserVisitor());
 
         Class<?> aClass = invocation.getTarget();
