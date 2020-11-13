@@ -15,19 +15,32 @@ import java.sql.SQLException;
 public class JdbcTest {
     @Test
     public void test() throws ClassNotFoundException, SQLException {
-        String sql = "select todate(currentTime), eventType from test_yiguan where price > 100";
+        String sql1 = "select app_id,year_month,count(app_id) from TemplateDetail";
+
+        String sql2 = "select * from TemplateDetail";
+
         Class.forName("com.fr.swift.jdbc.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:swift:remote://127.0.0.1:7000/cube");
+        Connection connection = DriverManager.getConnection("jdbc:swift:remote://127.0.0.1:7000/cube", "cloudswift", "iloveswift");
+        query(connection, sql1);
+        System.out.println();
+        query(connection, sql2);
+        connection.close();
+    }
+
+    public void query(Connection connection, String sql) throws SQLException {
         ResultSet resultSet = connection.createStatement().executeQuery(sql);
         ResultSetMetaData metaData = resultSet.getMetaData();
-//        for (int i = 0; i < metaData.getColumnCount(); i++) {
-//            System.out.println(metaData.getColumnName(i + 1));
-//        }
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            System.out.print(metaData.getColumnName(i) + "|");
+        }
+        System.out.println();
         int count = 0;
-        while (resultSet.next() && count++ < 200) {
-            System.out.println(resultSet.getObject(1) + ", " + resultSet.getObject(2));
+        while (resultSet.next()) {
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                System.out.print(resultSet.getObject(i) + "|");
+            }
+            System.out.println();
         }
         resultSet.close();
-        connection.close();
     }
 }
