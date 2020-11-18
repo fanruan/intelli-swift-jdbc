@@ -16,7 +16,7 @@ public class JdbcRequestInfoTest {
 
     @Test
     public void testColumnsRequest() throws Exception {
-        ColumnsRequestInfo columnsRequestInfo = new ColumnsRequestInfo("cube", "table", "authCode");
+        ColumnsRequestInfo columnsRequestInfo = new ColumnsRequestInfo("cube", "table");
         String jsonString = JsonBuilder.writeJsonString(columnsRequestInfo);
         ColumnsRequestInfo newInfo = JsonBuilder.readValue(jsonString, ColumnsRequestInfo.class);
         assertEquals("table", newInfo.getTable());
