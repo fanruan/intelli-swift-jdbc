@@ -1,5 +1,6 @@
 package com.fr.swift.api.server;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fr.swift.SwiftContext;
 import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.info.ApiInvocation;
@@ -37,22 +38,38 @@ public class ApiServerServiceImpl implements ApiServerService {
     @SwiftApi
     public ApiResponse dispatchRequest(String request) {
         ApiResponse response = new ApiResponseImpl();
-        SwiftLoggers.getLogger().info("Receive jdbc request body {}", request);
+        JSONObject jsonRequest = JSONObject.parseObject(request);
+        SwiftLoggers.getLogger().info("Receive jdbc request user :" + jsonRequest.get("swiftUser")
+                + " requestId: " + jsonRequest.get("requestId")
+                + " requestType: " + jsonRequest.get("requestType")
+                + " sql: " + jsonRequest.get("sql"));
         try {
             RequestInfo requestInfo = JsonBuilder.readValue(request, RequestInfo.class);
             ApiInvocation invocation = requestInfo.accept(new SwiftRequestParserVisitor());
             Object object = invokeRequest(invocation);
             response.setResult((Serializable) object);
         } catch (ApiRequestRuntimeException re) {
-            SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, re);
+            SwiftLoggers.getLogger().error("Handle jdbc error {}", re);
+            SwiftLoggers.getLogger().info("Receive jdbc request user :" + jsonRequest.get("swiftUser")
+                    + " requestId: " + jsonRequest.get("requestId")
+                    + " requestType: " + jsonRequest.get("requestType")
+                    + " sql: " + jsonRequest.get("sql"));
             response.setThrowable(re);
             response.setStatusCode(re.getStatusCode());
         } catch (ApiUserPasswordException ue) {
-            SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, ue);
+            SwiftLoggers.getLogger().error("Handle jdbc error {}", ue);
+            SwiftLoggers.getLogger().info("jdbc request : user :" + jsonRequest.get("swiftUser")
+                    + " requestId: " + jsonRequest.get("requestId")
+                    + " requestType: " + jsonRequest.get("requestType")
+                    + " sql: " + jsonRequest.get("sql"));
             response.setThrowable(ue);
             response.setStatusCode(ParamErrorCode.USER_PASSWORD_ERROR);
         } catch (Throwable e) {
-            SwiftLoggers.getLogger().error("Handle jdbc request {} with error", request, e);
+            SwiftLoggers.getLogger().error("Handle jdbc error {}", e);
+            SwiftLoggers.getLogger().info("jdbc request : user :" + jsonRequest.get("swiftUser")
+                    + " requestId: " + jsonRequest.get("requestId")
+                    + " requestType: " + jsonRequest.get("requestType")
+                    + " sql: " + jsonRequest.get("sql"));
             response.setThrowable(e);
             response.setStatusCode(ParamErrorCode.PARAMS_PARSER_ERROR);
         }
