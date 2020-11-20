@@ -5,7 +5,6 @@ import com.fr.swift.annotation.SwiftApi;
 import com.fr.swift.api.rpc.TableService;
 import com.fr.swift.api.rpc.bean.Column;
 import com.fr.swift.basics.annotation.ProxyService;
-import com.fr.swift.basics.base.selector.ProxySelector;
 import com.fr.swift.beans.annotation.SwiftBean;
 import com.fr.swift.config.SwiftConfigConstants;
 import com.fr.swift.config.entity.MetaDataColumnEntity;
@@ -16,12 +15,7 @@ import com.fr.swift.db.SwiftDatabase;
 import com.fr.swift.db.Table;
 import com.fr.swift.db.impl.AddColumnAction;
 import com.fr.swift.db.impl.DropColumnAction;
-//import com.fr.swift.event.global.TruncateEvent;
 import com.fr.swift.exception.meta.SwiftMetaDataAbsentException;
-import com.fr.swift.log.SwiftLoggers;
-//import com.fr.swift.selector.ClusterSelector;
-import com.fr.swift.service.ServiceContext;
-//import com.fr.swift.service.listener.RemoteSender;
 import com.fr.swift.source.SourceKey;
 import com.fr.swift.source.SwiftMetaData;
 import com.fr.swift.source.SwiftMetaDataColumn;
@@ -31,6 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author yee
@@ -51,7 +46,7 @@ public class TableServiceImpl implements TableService {
         if (swiftMetaData == null) {
             throw new SwiftMetaDataAbsentException(tableName);
         }
-        return swiftMetaData;
+        return MetaAdaptor.toCubeMeta(swiftMetaData);
     }
 
     @Override
@@ -61,7 +56,7 @@ public class TableServiceImpl implements TableService {
         if (metaDataList.isEmpty()) {
             return Collections.emptyList();
         } else {
-            return metaDataList;
+            return metaDataList.stream().map(MetaAdaptor::toCubeMeta).collect(Collectors.toList());
         }
     }
 
