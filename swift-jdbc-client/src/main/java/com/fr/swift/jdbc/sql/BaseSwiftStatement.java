@@ -20,7 +20,7 @@ public abstract class BaseSwiftStatement implements SwiftStatement {
     }
 
     <T> T execute(String sql, String requestId, JdbcExecutor executor) throws SQLException {
-        String newSql = JdbcJsonBuilder.buildSqlJson(sql, requestId, connection.getConfig().swiftDatabase(), connection.driver.holder.getAuthCode());
+        String newSql = JdbcJsonBuilder.buildSqlJson(sql, requestId, connection.getConfig().swiftDatabase(), connection.getConfig().swiftUser());
         return (T) connection.executeQueryInternal(newSql, executor);
     }
 
