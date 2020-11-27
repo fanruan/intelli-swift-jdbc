@@ -51,10 +51,22 @@ public class JdbcTest {
 //        list.add("select count(swift_app_id) from TimesAndUserNum");
 //        list.add("select count(swift_app_id) from VisitDays");
 //        list.add("select count(swift_app_id) from VisitTimesAndUserTimes");
-        list.add("select count(swift_app_id) from YearMonth");
-        for (String sql : list) {
-            query(connection, "select * from MemRatioCPU where swift_app_id = '836d15a6-8c39-46d0-bbd1-2b5733f74408' order by cpu desc ");
-        }
+//        list.add("select count(swift_app_id) from YearMonth");
+//        for (String sql : list) {
+//            query(connection, "select swift_app_id,swift_year_month,count(swift_app_id) from  BiEditUserNum");
+//        query(connection, "select swift_app_id,swift_year_month,count(swift_app_id) from  DownTimeAnalysis");
+//        query(connection,"select * from MaxBalanceScoreFormula");
+//        query(connection, "select day as `time` from BalanceScoreDayFormula where swift_app_id = '028fe96d-6a63-4ebb-af5f-53502e2a2358' and swift_year_month = '202009'");
+//
+//        query(connection, "select * from JarVersion where swift_app_id = '028fe96d-6a63-4ebb-af5f-53502e2a2358' and swift_year_month = '202009'");
+//
+//        query(connection, "select * from RetentionUp where swift_app_id = '028fe96d-6a63-4ebb-af5f-53502e2a2358' and swift_year_month = '202009'");
+//        query(connection, "select * from RetentionDown where swift_app_id = '028fe96d-6a63-4ebb-af5f-53502e2a2358' and swift_year_month = '202009'");
+        query(connection,"select * from VisitDays where swift_app_id = '028fe96d-6a63-4ebb-af5f-53502e2a2358' and swift_year_month = '202009'");
+//        query(connection,"select todate(gc_start_time, 'yyyy-MM-dd hh-mm-ss') from MemoryBalanceScoreDetail where swift_app_id = '028fe96d-6a63-4ebb-af5f-53502e2a2358' and swift_year_month = '202009'");
+
+
+//        }`
         connection.close();
 
 
@@ -79,6 +91,7 @@ public class JdbcTest {
             }
             System.out.println();
         }
+        System.out.println();
         resultSet.close();
     }
 }
