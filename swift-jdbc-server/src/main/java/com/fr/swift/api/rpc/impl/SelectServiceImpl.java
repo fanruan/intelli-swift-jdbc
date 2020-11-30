@@ -64,6 +64,6 @@ public class SelectServiceImpl implements SelectService {
         if (resultSet instanceof DetailResultSet) {
             rowCount = ((DetailResultSet) resultSet).getRowCount();
         }
-        return new OnePageApiResultSet(null, resultSet.getMetaData(), rows, rowCount, resultSet.hasNext());
+        return new OnePageApiResultSet(null, MetaAdaptor.toCubeMeta(resultSet.getMetaData()), rows, rowCount, resultSet.hasNext());
     }
 }

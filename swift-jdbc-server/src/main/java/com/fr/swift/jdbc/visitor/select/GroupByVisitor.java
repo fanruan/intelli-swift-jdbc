@@ -6,6 +6,7 @@ import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.query.aggregator.AggregatorType;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.DimensionBean;
+import com.fr.swift.query.info.bean.element.LimitBean;
 import com.fr.swift.query.info.bean.element.MetricBean;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
 import com.fr.swift.query.info.bean.query.GroupQueryInfoBean;
@@ -32,13 +33,15 @@ public class GroupByVisitor extends BaseQueryBeanVisitor<GroupQueryInfoBean> {
     private FilterInfoBean filterInfoBean;
     private SwiftSqlParser.ColumnsContext columns;
     private SwiftMetaData metaData;
+    private LimitBean limit;
 
     public GroupByVisitor(String tableName, SwiftMetaData metaData,
-                          FilterInfoBean filterInfoBean, SwiftSqlParser.ColumnsContext columns) {
+                          FilterInfoBean filterInfoBean, SwiftSqlParser.ColumnsContext columns, LimitBean limit) {
         this.metaData = metaData;
         this.tableName = tableName;
         this.filterInfoBean = filterInfoBean;
         this.columns = columns;
+        this.limit = limit;
     }
 
     @Override
@@ -57,6 +60,7 @@ public class GroupByVisitor extends BaseQueryBeanVisitor<GroupQueryInfoBean> {
         return GroupQueryInfoBean.builder(tableName)
                 .setDimensions(dimensionBeans)
                 .setAggregations(metricBeans)
+                .setLimit(limit)
                 .setFilter(filterInfoBean).build();
     }
 
