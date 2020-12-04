@@ -4,6 +4,7 @@ import com.fr.swift.jdbc.antlr4.SwiftSqlParseUtil;
 import com.fr.swift.jdbc.antlr4.SwiftSqlParser;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.DimensionBean;
+import com.fr.swift.query.info.bean.element.LimitBean;
 import com.fr.swift.query.info.bean.element.ToDateFormatFormulaBean;
 import com.fr.swift.query.info.bean.element.ToDateFormulaBean;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
@@ -26,11 +27,13 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
     private String tableName;
     private FilterInfoBean filter;
     private SwiftSqlParser.ColumnsContext columns;
+    private LimitBean limit;
 
-    public NoGroupByVisitor(String tableName, FilterInfoBean filterInfoBean, SwiftSqlParser.ColumnsContext columns) {
+    public NoGroupByVisitor(String tableName, FilterInfoBean filterInfoBean, SwiftSqlParser.ColumnsContext columns, LimitBean limit) {
         this.tableName = tableName;
         this.filter = filterInfoBean;
         this.columns = columns;
+        this.limit = limit;
     }
 
     @Override
@@ -47,9 +50,9 @@ public class NoGroupByVisitor extends BaseQueryBeanVisitor<QueryInfoBean> {
                     }
                 }
             }
-            return DetailQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).build();
+            return DetailQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setFilter(filter).setLimit(limit).build();
         } else {
-            return GroupQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setAggregations(metricBeans).setFilter(filter).build();
+            return GroupQueryInfoBean.builder(tableName).setDimensions(dimensionBeans).setAggregations(metricBeans).setFilter(filter).setLimit(limit).build();
         }
     }
 

@@ -14,6 +14,7 @@ import com.fr.swift.jdbc.visitor.where.BoolExprVisitor;
 import com.fr.swift.query.filter.SwiftDetailFilterType;
 import com.fr.swift.query.info.bean.element.AggregationBean;
 import com.fr.swift.query.info.bean.element.DimensionBean;
+import com.fr.swift.query.info.bean.element.LimitBean;
 import com.fr.swift.query.info.bean.element.filter.FilterInfoBean;
 import com.fr.swift.query.info.bean.element.filter.impl.ComplexFilterInfoBean;
 import com.fr.swift.query.info.bean.element.filter.impl.DetailFilterInfoBean;
@@ -66,9 +67,14 @@ public class SelectListener extends SwiftSqlParserBaseListener implements Select
                 }
                 filter = filters.size() == 1 ? filters.get(0) : ComplexFilterInfoBean.and(filters);
             }
+            LimitBean limit = null;
+            if (ctx.limit != null) {
+                String text = ctx.limit.getText();
+                limit = new LimitBean(Integer.valueOf(text));
 
-            bean = null != ctx.groupBy || distinct ? ctx.accept(new GroupByVisitor(tableName, metaData, filter, ctx.columns()))
-                    : ctx.accept(new NoGroupByVisitor(tableName, filter, ctx.columns()));
+            }
+            bean = null != ctx.groupBy || distinct ? ctx.accept(new GroupByVisitor(tableName, metaData, filter, ctx.columns(), limit))
+                    : ctx.accept(new NoGroupByVisitor(tableName, filter, ctx.columns(), limit));
         }
     }
 
