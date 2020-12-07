@@ -9,13 +9,13 @@ import java.util.UUID;
  */
 public class JdbcJsonBuilder {
 
-    public static String buildSqlJson(String sql, String requestId, String database, String authCode) {
+    public static String buildSqlJson(String sql, String requestId, String database, String swiftUser) {
         requestId = Strings.isEmpty(requestId) ? UUID.randomUUID().toString() : requestId;
 
         return "{\"requestId\": \"" +
                 requestId +
                 "\", \"requestType\": \"SQL\", \"sql\": \"" + sql.replaceAll("\\n", " ") + "\",\"database\": \"" +
-                database + "\", \"auth\": \"" + authCode + "\"}";
+                database + "\", \"swiftUser\": \"" + swiftUser + "\"}";
     }
 
     public static String buildAuthJson(String username, String password, String fromAddress) {
