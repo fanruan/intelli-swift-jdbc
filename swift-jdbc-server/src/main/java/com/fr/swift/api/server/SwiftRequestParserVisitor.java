@@ -61,7 +61,7 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
 
     @Override
     public ApiInvocation visit(final SqlRequestInfo sqlRequestInfo) {
-        String sql = sqlRequestInfo.getSql();
+        final String sql = sqlRequestInfo.getSql();
         final String[] schema = {sqlRequestInfo.getDatabase()};
         final ApiInvocation[] result = {null};
         SwiftSqlBeanHandler swiftSqlBeanHandler = new SwiftSqlBeanHandler() {
@@ -80,7 +80,7 @@ public class SwiftRequestParserVisitor implements JdbcRequestParserVisitor, ApiR
                     ApiCrasher.crash(ParamErrorCode.PARAMS_PARSER_ERROR);
                 }
                 result[0] = createApiInvocation("query", SelectService.class,
-                        SwiftDatabase.fromKey(schema[0]), queryJson);
+                        SwiftDatabase.fromKey(schema[0]), queryJson, sql);
             }
 
             @Override
