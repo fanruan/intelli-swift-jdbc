@@ -17,4 +17,15 @@ public interface SelectService extends ApiService {
      * @throws Exception
      */
     SwiftApiResultSet query(SwiftDatabase database, String queryJson) throws Exception;
+
+    /**
+     * 查询接口，带入原始sql
+     *
+     * @param database
+     * @param queryJson
+     * @param sql
+     * @return
+     * @throws Exception
+     */
+    SwiftApiResultSet query(SwiftDatabase database, String queryJson, String sql) throws Exception;
 }
