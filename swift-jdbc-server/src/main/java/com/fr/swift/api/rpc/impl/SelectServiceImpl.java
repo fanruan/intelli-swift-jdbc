@@ -49,13 +49,13 @@ public class SelectServiceImpl implements SelectService {
     public SwiftApiResultSet query(SwiftDatabase database, String queryJson, String sql) throws Exception {
         QueryBean queryBean = QueryBeanFactory.create(queryJson);
         String tableName = queryBean.getTableName();
-        if (ReportSchemaCache.get().isReport(tableName)) {
-            JdbcFilterParser parser = SwiftContext.get().getBean(JdbcFilterParser.class);
-            List<SegmentKey> segmentKeys = parser.getSegmentKeys(queryBean);
-            queryBean.setSegments(segmentKeys.stream().map(s -> s.getId()).collect(Collectors.toSet()));
-            return (SwiftApiResultSet) ReportSchemaCache.get().cache().get(sql, () -> query(database, queryBean, Integer.MAX_VALUE));
-        }
-        return query(database, queryBean, 2000);
+//        if (ReportSchemaCache.get().isReport(tableName)) {
+//            JdbcFilterParser parser = SwiftContext.get().getBean(JdbcFilterParser.class);
+//            List<SegmentKey> segmentKeys = parser.getSegmentKeys(queryBean);
+//            queryBean.setSegments(segmentKeys.stream().map(s -> s.getId()).collect(Collectors.toSet()));
+//            return (SwiftApiResultSet) ReportSchemaCache.get().cache().get(sql, () -> query(database, queryBean, Integer.MAX_VALUE));
+//        }
+        return query(database, queryBean, 200);
     }
 
     private SwiftApiResultSet query(SwiftDatabase database, QueryBean queryBean, int fetchSize) throws SQLException {
