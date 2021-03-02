@@ -11,6 +11,39 @@
 
     <artifactId>swift-jdbc-client</artifactId>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!--                            <minimizeJar>true</minimizeJar>-->
+                            <artifactSet>
+                                <includes>
+                                    <include>org.apache.commons:commons-lang3</include>
+                                    <include>org.apache.commons:commons-pool2</include>
+                                    <include>com.google.guava:guava</include>
+                                    <include>javax.persistence:javax.persistence-api</include>
+                                    <include>com.fr.intelligence:swift-api-server</include>
+                                    <include>com.fr.intelligence:swift-jdbc-parser</include>
+                                    <include>com.fr.intelligence:swift-swift-base-common</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.fr.intelligence</groupId>
@@ -22,7 +55,6 @@
             <artifactId>swift-api-server</artifactId>
             <version>${swift.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fr.intelligence</groupId>
             <artifactId>swift-base-common</artifactId>
@@ -31,11 +63,12 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
+            <version>4.1.17.Final</version>
         </dependency>
         <dependency>
-            <groupId>com.fr.intelligence</groupId>
-            <artifactId>swift-base-config</artifactId>
-            <version>2020.3</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.6.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
