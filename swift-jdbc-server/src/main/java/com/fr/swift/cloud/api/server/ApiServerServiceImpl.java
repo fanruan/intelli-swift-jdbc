@@ -91,6 +91,7 @@ public class ApiServerServiceImpl implements ApiServerService {
                 return ApiCrasher.crash(ServerErrorCode.SERVER_INVOKE_ERROR, ie);
             }
         } catch (Exception e) {
+            SwiftLoggers.getLogger().error(e);
             return ApiCrasher.crash(ServerErrorCode.SERVER_INVOKE_ERROR, e);
         }
     }
