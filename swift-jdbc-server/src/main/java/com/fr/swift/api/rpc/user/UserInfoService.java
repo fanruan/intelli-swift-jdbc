@@ -7,6 +7,7 @@ import com.fr.swift.config.entity.user.UserPermission;
 import com.fr.swift.log.SwiftLoggers;
 import com.fr.swift.source.core.MD5Utils;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class UserInfoService {
         String authCode = ((SwiftUserInfo) select.get(0)).getPassword();
         if (authCode.equals(md5String)) {
             JDBCUserInfo jdbcUserInfo = new JDBCUserInfo();
-            jdbcUserInfo.setCreateTime(((SwiftUserInfo) select.get(0)).getCreateTime());
+            jdbcUserInfo.setCreateTime(new Date(System.currentTimeMillis()));
             jdbcUserInfo.setPassword(authCode);
             userCache.put(username, jdbcUserInfo);
             return true;

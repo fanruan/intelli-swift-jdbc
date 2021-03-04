@@ -24,7 +24,7 @@ public enum JDBCUserCache {
             Iterator<Map.Entry<String, JDBCUserInfo>> iterator = userMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, JDBCUserInfo> next = iterator.next();
-                if (next.getValue().getCreateTime().getTime() + cacheTime > now) {
+                if (next.getValue().getCreateTime().getTime() + cacheTime < now) {
                     iterator.remove();
                 }
             }
@@ -32,9 +32,6 @@ public enum JDBCUserCache {
     }
 
     public void put(String userName, JDBCUserInfo jdbcUserInfo) {
-        if (userMap.containsKey(userName)) {
-            userMap.put(userName, jdbcUserInfo);
-        }
         userMap.put(userName, jdbcUserInfo);
     }
 
