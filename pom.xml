@@ -12,6 +12,7 @@
     <artifactId>swift-jdbc</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>swift-api-server</module>
         <module>swift-jdbc-client</module>
         <module>swift-jdbc-server</module>
         <module>swift-jdbc-parser</module>
