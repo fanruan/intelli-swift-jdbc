@@ -34,7 +34,7 @@
                                     <include>javax.persistence:javax.persistence-api</include>
                                     <include>com.fr.intelligence:swift-api-server</include>
                                     <include>com.fr.intelligence:swift-jdbc-parser</include>
-                                    <include>com.fr.intelligence:swift-swift-base-common</include>
+                                    <include>com.fr.intelligence:swift-base-common</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
