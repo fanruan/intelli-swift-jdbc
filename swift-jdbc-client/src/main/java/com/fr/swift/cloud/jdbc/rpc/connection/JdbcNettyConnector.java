@@ -36,7 +36,7 @@ public class JdbcNettyConnector extends BaseConnector {
             return;
         }
         try {
-            this.jdbcNettyHandler = JdbcNettyPool.getInstance().borrowObject(String.format("%s:%s", host, port));
+            this.jdbcNettyHandler = JdbcNettyPool.getInstance().borrowObject(getKey());
         } catch (Exception e) {
             throw new SQLException(e);
         }
@@ -47,11 +47,15 @@ public class JdbcNettyConnector extends BaseConnector {
         if (!isStarted.getAndSet(false)) {
             return;
         }
-        JdbcNettyPool.getInstance().returnObject(String.format("%s:%s", host, port), jdbcNettyHandler);
+        JdbcNettyPool.getInstance().returnObject(getKey(), jdbcNettyHandler);
         this.jdbcNettyHandler = null;
     }
 
     public JdbcNettyHandler getJdbcNettyHandler() {
         return jdbcNettyHandler;
+    }
+
+    public void updateNettyHandler(JdbcNettyHandler jdbcNettyHandler) {
+        this.jdbcNettyHandler = jdbcNettyHandler;
     }
 }

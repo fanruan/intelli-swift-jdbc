@@ -4,6 +4,7 @@ import com.fr.swift.cloud.basic.SwiftRequest;
 import com.fr.swift.cloud.basic.SwiftResponse;
 import com.fr.swift.cloud.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.cloud.jdbc.rpc.connection.JdbcNettyConnector;
+import com.fr.swift.cloud.jdbc.rpc.connection.JdbcNettyPool;
 
 import java.sql.SQLException;
 import java.util.concurrent.locks.Condition;
@@ -34,7 +35,14 @@ public class JdbcNettyExecutor implements JdbcExecutor {
 
     @Override
     public SwiftResponse send(SwiftRequest rpcRequest) throws Exception {
-        return connector.getJdbcNettyHandler().send(rpcRequest);
+        JdbcNettyHandler handler = connector.getJdbcNettyHandler();
+        if (!handler.isActive()) {
+            JdbcNettyPool.getInstance().returnObject(connector.getKey(), handler);
+            JdbcNettyPool.getInstance().invalidateObject(connector.getKey(), handler);
+            handler = JdbcNettyPool.getInstance().borrowObject(connector.getKey());
+            connector.updateNettyHandler(handler);
+        }
+        return handler.send(rpcRequest);
     }
 
     @Override
