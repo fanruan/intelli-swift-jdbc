@@ -51,11 +51,13 @@ public class JdbcNettyConnector extends BaseConnector {
         this.jdbcNettyHandler = null;
     }
 
-    public JdbcNettyHandler getJdbcNettyHandler() {
+    public JdbcNettyHandler getJdbcNettyHandler() throws Exception {
+        if (!jdbcNettyHandler.isActive()) {
+            String address = getAddress();
+            JdbcNettyPool.getInstance().returnObject(address, jdbcNettyHandler);
+            JdbcNettyPool.getInstance().invalidateObject(address, jdbcNettyHandler);
+            jdbcNettyHandler = JdbcNettyPool.getInstance().borrowObject(address);
+        }
         return jdbcNettyHandler;
-    }
-
-    public void updateNettyHandler(JdbcNettyHandler jdbcNettyHandler) {
-        this.jdbcNettyHandler = jdbcNettyHandler;
     }
 }

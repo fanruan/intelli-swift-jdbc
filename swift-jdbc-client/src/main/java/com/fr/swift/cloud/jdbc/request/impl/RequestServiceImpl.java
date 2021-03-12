@@ -2,6 +2,7 @@ package com.fr.swift.cloud.jdbc.request.impl;
 
 import com.fr.swift.cloud.api.server.ApiServerService;
 import com.fr.swift.cloud.api.server.response.ApiResponse;
+import com.fr.swift.cloud.jdbc.exception.Exceptions;
 import com.fr.swift.cloud.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.cloud.jdbc.request.JdbcRequestService;
 import com.fr.swift.cloud.jdbc.rpc.JdbcExecutor;
@@ -45,6 +46,9 @@ public class RequestServiceImpl implements JdbcRequestService {
                 }
                 TimeUnit.MILLISECONDS.sleep(10);
             } catch (final Exception e) {
+                if (Exceptions.needRetry(e)) {
+                    continue;
+                }
                 return new ApiResponse() {
                     @Override
                     public int statusCode() {
