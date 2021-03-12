@@ -37,9 +37,10 @@ public class JdbcNettyExecutor implements JdbcExecutor {
     public SwiftResponse send(SwiftRequest rpcRequest) throws Exception {
         JdbcNettyHandler handler = connector.getJdbcNettyHandler();
         if (!handler.isActive()) {
-            JdbcNettyPool.getInstance().returnObject(connector.getKey(), handler);
-            JdbcNettyPool.getInstance().invalidateObject(connector.getKey(), handler);
-            handler = JdbcNettyPool.getInstance().borrowObject(connector.getKey());
+            String address = connector.getAddress();
+            JdbcNettyPool.getInstance().returnObject(address, handler);
+            JdbcNettyPool.getInstance().invalidateObject(address, handler);
+            handler = JdbcNettyPool.getInstance().borrowObject(address);
             connector.updateNettyHandler(handler);
         }
         return handler.send(rpcRequest);

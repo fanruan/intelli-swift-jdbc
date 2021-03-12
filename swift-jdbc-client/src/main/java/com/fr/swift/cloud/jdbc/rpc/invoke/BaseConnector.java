@@ -83,7 +83,7 @@ public abstract class BaseConnector implements JdbcConnector {
         return null != sendQueueCache.peek();
     }
 
-    public String getKey() {
+    public String getAddress() {
         return String.format("%s:%s", host, port);
     }
 }

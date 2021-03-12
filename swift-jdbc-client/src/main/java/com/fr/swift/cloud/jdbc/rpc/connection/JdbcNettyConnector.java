@@ -36,7 +36,7 @@ public class JdbcNettyConnector extends BaseConnector {
             return;
         }
         try {
-            this.jdbcNettyHandler = JdbcNettyPool.getInstance().borrowObject(getKey());
+            this.jdbcNettyHandler = JdbcNettyPool.getInstance().borrowObject(getAddress());
         } catch (Exception e) {
             throw new SQLException(e);
         }
@@ -47,7 +47,7 @@ public class JdbcNettyConnector extends BaseConnector {
         if (!isStarted.getAndSet(false)) {
             return;
         }
-        JdbcNettyPool.getInstance().returnObject(getKey(), jdbcNettyHandler);
+        JdbcNettyPool.getInstance().returnObject(getAddress(), jdbcNettyHandler);
         this.jdbcNettyHandler = null;
     }
 
