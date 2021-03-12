@@ -78,4 +78,8 @@ public final class Exceptions {
     public static AddressNotFoundException addressNotFound(String type) {
         return new AddressNotFoundException(type);
     }
+
+    public static boolean needRetry(Exception e) {
+        return e instanceof ConnectionTimeoutException;
+    }
 }

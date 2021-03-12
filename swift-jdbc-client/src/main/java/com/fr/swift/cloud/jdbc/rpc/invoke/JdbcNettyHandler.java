@@ -4,6 +4,7 @@ import com.fr.swift.cloud.basic.SwiftRequest;
 import com.fr.swift.cloud.basic.SwiftResponse;
 import com.fr.swift.cloud.jdbc.JdbcProperty;
 import com.fr.swift.cloud.jdbc.exception.Exceptions;
+import com.fr.swift.cloud.log.SwiftLoggers;
 import com.fr.swift.cloud.util.Strings;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -67,7 +68,7 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
             );
             condition.await(timeout, TimeUnit.MILLISECONDS);
             if (null == response) {
-                throw Exceptions.timeout("connection timeout");
+                throw Exceptions.timeout(String.format("connection timeout with %s", channelFuture.cause() == null ? Strings.EMPTY : channelFuture.cause().toString()));
             }
             return response;
         } catch (InterruptedException e) {
@@ -92,16 +93,19 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
         this.channel = ctx.channel();
+        SwiftLoggers.getLogger().info("Remote address[{}] registered. Channel id is [{}].", ctx.channel().remoteAddress(), ctx.channel().id());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
+        SwiftLoggers.getLogger().info("Remote address[{}] inactive . Channel id is [{}]", ctx.channel().remoteAddress(), ctx.channel().id());
         ctx.close();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        SwiftLoggers.getLogger().error("Remote address[{}] exception . Channel id is [{}]. error [{}]", ctx.channel().remoteAddress(), ctx.channel().id(), cause);
         ctx.close();
     }
 
@@ -123,5 +127,9 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
 
     public String getId() {
         return id;
+    }
+
+    public boolean isActive() {
+        return channel != null && channel.isActive();
     }
 }
