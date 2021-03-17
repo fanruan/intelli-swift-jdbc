@@ -82,4 +82,8 @@ public abstract class BaseConnector implements JdbcConnector {
     public boolean isNeedToSend() {
         return null != sendQueueCache.peek();
     }
+
+    public String getAddress() {
+        return String.format("%s:%s", host, port);
+    }
 }
