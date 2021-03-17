@@ -1,6 +1,5 @@
 package com.fr.swift.cloud.jdbc.sql;
 
-import com.fr.swift.cloud.api.info.jdbc.ColumnsRequestInfo;
 import com.fr.swift.cloud.api.info.jdbc.TablesRequestInfo;
 import com.fr.swift.cloud.api.server.response.ApiResponse;
 import com.fr.swift.cloud.base.json.JsonBuilder;
@@ -729,7 +728,7 @@ public class SwiftDataBaseMetaData implements DatabaseMetaData {
         ConnectionConfig config = connection.getConfig();
         List<Row> fields = new ArrayList<Row>();
         try {
-            String requestJson = JsonBuilder.writeJsonString(new ColumnsRequestInfo(config.swiftDatabase(), config.swiftUser()));
+            String requestJson = JsonBuilder.writeJsonString(new TablesRequestInfo(config.swiftDatabase(), config.swiftUser()));
             JdbcExecutor executor = config.requestExecutor();
             try {
                 ApiResponse response = connection.driver.holder.getRequestService().applyWithRetry(executor, requestJson, 3);
