@@ -46,7 +46,7 @@ public class RequestServiceImpl implements JdbcRequestService {
                 }
                 TimeUnit.MILLISECONDS.sleep(10);
             } catch (final Exception e) {
-                if (Exceptions.needRetry(e)) {
+                if (Exceptions.needRetry(e) && i != retryTime - 1) {
                     continue;
                 }
                 return new ApiResponse() {
