@@ -299,7 +299,7 @@ public class SwiftStatementImpl extends BaseSwiftStatement {
 
     @Override
     public String getObjId() {
-        return UUID.randomUUID().toString();
+        return id;
     }
 
     @Override

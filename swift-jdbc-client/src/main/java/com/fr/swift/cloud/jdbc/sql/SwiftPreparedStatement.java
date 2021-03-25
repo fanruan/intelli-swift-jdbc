@@ -356,12 +356,6 @@ public class SwiftPreparedStatement extends SwiftStatementImpl implements Prepar
         super.close();
     }
 
-
-    @Override
-    public String getObjId() {
-        return sql;
-    }
-
     @Override
     public void reset() throws SQLException {
         super.reset();
