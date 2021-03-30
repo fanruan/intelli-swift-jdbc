@@ -3,4 +3,5 @@
 .DS_Store
 .classpath
 target/generated-sources
+*/target/
 
