@@ -6,12 +6,14 @@
         <artifactId>fine-swift</artifactId>
         <groupId>com.fr.intelligence</groupId>
         <version>2020.3</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>swift-jdbc</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>swift-api-server</module>
         <module>swift-jdbc-client</module>
         <module>swift-jdbc-server</module>
         <module>swift-jdbc-parser</module>
