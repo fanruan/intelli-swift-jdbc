@@ -12,6 +12,8 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -107,6 +109,19 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         SwiftLoggers.getLogger().error("Remote address[{}] exception . Channel id is [{}]. error [{}]", ctx.channel().remoteAddress(), ctx.channel().id(), cause);
         ctx.close();
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (!(evt instanceof IdleStateEvent)) {
+            return;
+        }
+        IdleStateEvent e = (IdleStateEvent) evt;
+        if (e.state() == IdleState.READER_IDLE || e.state() == IdleState.WRITER_IDLE) {
+            // 连接正常，但是没有读、写信息，关闭连接
+            SwiftLoggers.getLogger().info("Disconnecting due to no inbound traffic");
+            ctx.close();
+        }
     }
 
     public void setGroup(EventLoopGroup group) {

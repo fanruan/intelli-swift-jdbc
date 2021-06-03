@@ -14,9 +14,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -27,6 +30,15 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 public class JdbcNettyPoolFactory extends BaseKeyedPooledObjectFactory<String, JdbcNettyHandler> {
 
     private static final int MAX_OBJ_SIZE = Integer.MAX_VALUE;
+
+    // 读超时
+    private static final long READ_IDEL_TIME_OUT = TimeUnit.MINUTES.toSeconds(5);
+
+    // 写超时 怀疑是这个问题, 长时间不用也不检查
+    private static final long WRITE_IDEL_TIME_OUT = TimeUnit.MINUTES.toSeconds(5);
+
+    // 所有超时
+    private static final int ALL_IDEL_TIME_OUT = 0;
 
     public JdbcNettyPoolFactory() {
     }
@@ -56,6 +68,7 @@ public class JdbcNettyPoolFactory extends BaseKeyedPooledObjectFactory<String, J
                         new ObjectDecoder(MAX_OBJ_SIZE, ClassResolvers.cacheDisabled(this
                                 .getClass().getClassLoader())));
                 pipeline.addLast(new ObjectEncoder());
+                pipeline.addLast(new IdleStateHandler(READ_IDEL_TIME_OUT, WRITE_IDEL_TIME_OUT, ALL_IDEL_TIME_OUT, TimeUnit.SECONDS));
                 pipeline.addLast(handler);
             }
         });
