@@ -82,9 +82,9 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, SwiftResponse o) throws Exception {
-        this.response = o;
         lock.lock();
         try {
+            this.response = o;
             condition.signalAll();
         } finally {
             lock.unlock();
