@@ -72,6 +72,9 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
             if (null == response) {
                 throw Exceptions.timeout(String.format("connection timeout with %s", channelFuture.cause() == null ? Strings.EMPTY : channelFuture.cause().toString()));
             }
+            if (response.getException() != null) {
+                throw Exceptions.runtime(response.getException().getMessage(), response.getException());
+            }
             return response;
         } catch (InterruptedException e) {
             throw Exceptions.timeout("connection timeout");
