@@ -1,6 +1,6 @@
 package com.fr.swift.cloud.jdbc.rpc.invoke;
 
-import com.fr.swift.cloud.basic.Request;
+import com.fr.swift.cloud.basic.IdleRequest;
 import com.fr.swift.cloud.basic.SwiftRequest;
 import com.fr.swift.cloud.basic.SwiftResponse;
 import com.fr.swift.cloud.jdbc.JdbcProperty;
@@ -123,11 +123,10 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
         IdleStateEvent e = (IdleStateEvent) evt;
         if (e.state() == IdleState.READER_IDLE) {
             // READ_IDLE_TIME_OUT 没有接收到消息(没有从 Channel 读取到数据), 发送ping
-            SwiftRequest swiftRequest = new SwiftRequest();
-            swiftRequest.setMethodName(Request.HEART_BEAT);
-            ctx.writeAndFlush(swiftRequest);
+            ctx.writeAndFlush(new IdleRequest());
         } else if (e.state() == IdleState.WRITER_IDLE) {
             // WRITE_IDLE_TIME_OUT 没有写消息, 关闭当前连接
+            SwiftLoggers.getLogger().info("Disconnecting due to no outbound traffic");
             ctx.close();
         }
     }
