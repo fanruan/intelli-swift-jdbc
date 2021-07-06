@@ -72,6 +72,9 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
             if (null == response) {
                 throw Exceptions.timeout(String.format("connection timeout with %s", channelFuture.cause() == null ? Strings.EMPTY : channelFuture.cause().toString()));
             }
+            if (response.getException() != null) {
+                throw Exceptions.runtime(response.getException().getMessage(), response.getException());
+            }
             return response;
         } catch (InterruptedException e) {
             throw Exceptions.timeout("connection timeout");
@@ -82,9 +85,9 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, SwiftResponse o) throws Exception {
-        this.response = o;
         lock.lock();
         try {
+            this.response = o;
             condition.signalAll();
         } finally {
             lock.unlock();
@@ -114,7 +117,7 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (!(evt instanceof IdleStateEvent)) {
-            return;
+            super.userEventTriggered(ctx, evt);
         }
         IdleStateEvent e = (IdleStateEvent) evt;
         if (e.state() == IdleState.READER_IDLE || e.state() == IdleState.WRITER_IDLE) {
