@@ -117,7 +117,7 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (!(evt instanceof IdleStateEvent)) {
-            return;
+            super.userEventTriggered(ctx, evt);
         }
         IdleStateEvent e = (IdleStateEvent) evt;
         if (e.state() == IdleState.READER_IDLE || e.state() == IdleState.WRITER_IDLE) {
