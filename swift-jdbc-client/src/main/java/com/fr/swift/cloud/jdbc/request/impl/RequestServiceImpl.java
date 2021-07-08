@@ -7,6 +7,7 @@ import com.fr.swift.cloud.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.cloud.jdbc.request.JdbcRequestService;
 import com.fr.swift.cloud.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.cloud.jdbc.rpc.invoke.ClientProxy;
+import com.fr.swift.cloud.log.SwiftLoggers;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +50,7 @@ public class RequestServiceImpl implements JdbcRequestService {
                 if (Exceptions.needRetry(e) && i != retryTime - 1) {
                     continue;
                 }
+                SwiftLoggers.getLogger().error("Query failed with exception or exceeded retry times", e);
                 return new ApiResponse() {
                     @Override
                     public int statusCode() {

@@ -28,6 +28,8 @@ public final class JdbcProperty {
     private boolean compliant;
     private ClassResolver resolver;
     private int connectionPoolSize;
+    private long readIdleTimeout;
+    private long writeIdleTimeout;
 
     public JdbcProperty(
             String connectionSchema,
@@ -36,7 +38,9 @@ public final class JdbcProperty {
             long connectionTimeout,
             int statementMaxIdle,
             boolean compliant,
-            int connectionPoolSize) {
+            int connectionPoolSize,
+            long readIdleTimeout,
+            long writeIdleTimeout) {
         this.connectionSchema = connectionSchema;
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
@@ -46,6 +50,8 @@ public final class JdbcProperty {
         ClassResolver resolver = new ClassLoaderClassResolver(Thread.currentThread().getContextClassLoader());
         this.resolver = new CachingClassResolver(resolver, new ConcurrentHashMap<String, Class<?>>());
         this.connectionPoolSize = connectionPoolSize;
+        this.readIdleTimeout = readIdleTimeout;
+        this.writeIdleTimeout = writeIdleTimeout;
     }
 
     public static JdbcProperty get() {
@@ -62,7 +68,9 @@ public final class JdbcProperty {
                     600000,
                     200,
                     false,
-                    64
+                    64,
+                    300000,
+                    1500000
             );
             return;
         }
@@ -76,6 +84,8 @@ public final class JdbcProperty {
             int statementMaxIdle = Integer.parseInt(properties.getProperty("statement.maxIdle", "200"));
             boolean compliant = Boolean.parseBoolean(properties.getProperty("driver.compliant", "false"));
             int connectionPoolSize = Integer.parseInt(properties.getProperty("connection.pool.size", "64"));
+            long readIdleTimeout = Long.parseLong(properties.getProperty("read.idle.timeout", "600000"));
+            long writeIdleTimeout = Long.parseLong(properties.getProperty("write.idle.timeout", "1800000"));
             property = new JdbcProperty(
                     connectionSchema,
                     majorVersion,
@@ -83,7 +93,9 @@ public final class JdbcProperty {
                     timeout,
                     statementMaxIdle,
                     compliant,
-                    connectionPoolSize);
+                    connectionPoolSize,
+                    readIdleTimeout,
+                    writeIdleTimeout);
         } catch (IOException e) {
             property = new JdbcProperty(
                     "jdbc:swift",
@@ -92,7 +104,9 @@ public final class JdbcProperty {
                     3000,
                     200,
                     false,
-                    64
+                    64,
+                    600000,
+                    1800000
             );
         } finally {
             try {
@@ -133,5 +147,13 @@ public final class JdbcProperty {
 
     public int getConnectionPoolSize() {
         return connectionPoolSize;
+    }
+
+    public long getReadIdleTimeout() {
+        return readIdleTimeout;
+    }
+
+    public long getWriteIdleTimeout() {
+        return writeIdleTimeout;
     }
 }

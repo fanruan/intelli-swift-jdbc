@@ -3,11 +3,13 @@ package com.fr.swift.cloud.jdbc;
 import com.fr.swift.cloud.api.server.response.ApiResponse;
 import com.fr.swift.cloud.api.server.response.AuthResponse;
 import com.fr.swift.cloud.jdbc.exception.Exceptions;
+import com.fr.swift.cloud.jdbc.log.SwiftJdbcLoggers;
 import com.fr.swift.cloud.jdbc.request.JdbcJsonBuilder;
 import com.fr.swift.cloud.jdbc.rpc.JdbcExecutor;
 import com.fr.swift.cloud.jdbc.sql.BaseSwiftConnection;
 import com.fr.swift.cloud.jdbc.sql.ConnectionConfig;
 import com.fr.swift.cloud.jdbc.sql.UnregisteredDriver;
+import com.fr.swift.cloud.log.SwiftLoggers;
 
 import java.io.File;
 import java.sql.Connection;
@@ -22,6 +24,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Driver extends UnregisteredDriver {
     static {
         new Driver().register();
+        try {
+            Class.forName("com.fr.log.FineLoggerFactory");
+            SwiftLoggers.setLoggerFactory(new SwiftJdbcLoggers());
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
