@@ -1,5 +1,7 @@
 package com.fr.swift.cloud.jdbc.rpc.invoke;
 
+import com.fr.swift.cloud.api.service.JdbcIdleRequest;
+import com.fr.swift.cloud.api.service.JdbcIdleResponse;
 import com.fr.swift.cloud.basic.SwiftRequest;
 import com.fr.swift.cloud.basic.SwiftResponse;
 import com.fr.swift.cloud.jdbc.JdbcProperty;
@@ -115,16 +117,32 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
     }
 
     @Override
+    public boolean acceptInboundMessage(Object msg) throws Exception {
+        return !(((SwiftResponse) msg).getResult() instanceof JdbcIdleResponse);
+    }
+
+    @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (!(evt instanceof IdleStateEvent)) {
             super.userEventTriggered(ctx, evt);
         }
         IdleStateEvent e = (IdleStateEvent) evt;
-        if (e.state() == IdleState.READER_IDLE || e.state() == IdleState.WRITER_IDLE) {
-            // 连接正常，但是没有读、写信息，关闭连接
-            SwiftLoggers.getLogger().info("Disconnecting due to no inbound traffic");
-            ctx.close();
+        if (e.state() == IdleState.WRITER_IDLE) {
+            lock.lock();
+            try {
+                if (response == null) {
+                    // 长时间没有写消息, 如果在等待结果, 避免连接失效 -> 心跳检测
+                    SwiftLoggers.getLogger().info("Waiting for response, heart beat detection!");
+                    ctx.writeAndFlush(JdbcIdleRequest.getJdbcHeartbeat());
+                } else {
+                    // 已经有结果返回了, 如果超时, 则关闭连接 -> 上层会申请新对象
+                    ctx.close();
+                }
+            } finally {
+                lock.unlock();
+            }
         }
+        // 长时间未读取数据, 仅会出现在等待swift查询结果, 有上述WRITER_IDLE保证连通, 继续等待结果
     }
 
     public void setGroup(EventLoopGroup group) {
