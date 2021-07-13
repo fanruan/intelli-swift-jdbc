@@ -1,6 +1,6 @@
 package com.fr.swift.cloud.api.service;
 
-import com.fr.swift.cloud.basic.SwiftResponse;
+import java.io.Serializable;
 
 /**
  * @author Heng.J
@@ -8,7 +8,7 @@ import com.fr.swift.cloud.basic.SwiftResponse;
  * @description
  * @since swift-1.2.0
  */
-public class JdbcIdleResponse extends SwiftResponse {
+public class JdbcIdleResponse implements Serializable {
 
     private static final long serialVersionUID = 4521969047749719878L;
 }
