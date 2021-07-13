@@ -130,7 +130,6 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
                     ctx.writeAndFlush(JdbcIdleRequest.getJdbcHeartbeat());
                 } else {
                     // 已经有结果返回了, 如果超时, 则关闭连接 -> 上层会申请新对象
-                    SwiftLoggers.getLogger().info("13123!");
                     ctx.close();
                 }
             } finally {
