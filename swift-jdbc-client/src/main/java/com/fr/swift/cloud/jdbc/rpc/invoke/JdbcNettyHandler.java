@@ -1,10 +1,11 @@
 package com.fr.swift.cloud.jdbc.rpc.invoke;
 
+import com.fr.swift.cloud.api.service.JdbcIdleRequest;
+import com.fr.swift.cloud.api.service.JdbcIdleResponse;
 import com.fr.swift.cloud.basic.SwiftRequest;
 import com.fr.swift.cloud.basic.SwiftResponse;
 import com.fr.swift.cloud.jdbc.JdbcProperty;
 import com.fr.swift.cloud.jdbc.exception.Exceptions;
-import com.fr.swift.cloud.jdbc.request.JdbcIdleRequest;
 import com.fr.swift.cloud.log.SwiftLoggers;
 import com.fr.swift.cloud.util.Strings;
 import io.netty.channel.Channel;
@@ -113,6 +114,11 @@ public class JdbcNettyHandler extends SimpleChannelInboundHandler<SwiftResponse>
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         SwiftLoggers.getLogger().error("Remote address[{}] exception . Channel id is [{}]. error [{}]", ctx.channel().remoteAddress(), ctx.channel().id(), cause);
         ctx.close();
+    }
+
+    @Override
+    public boolean acceptInboundMessage(Object msg) throws Exception {
+        return !(((SwiftResponse) msg).getResult() instanceof JdbcIdleResponse);
     }
 
     @Override

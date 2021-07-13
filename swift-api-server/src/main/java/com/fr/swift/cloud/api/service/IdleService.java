@@ -1,4 +1,4 @@
-package com.fr.swift.cloud.api.server;
+package com.fr.swift.cloud.api.service;
 
 /**
  * @author Heng.J
@@ -8,5 +8,5 @@ package com.fr.swift.cloud.api.server;
  */
 public interface IdleService {
 
-    void heartBeat();
+    JdbcIdleResponse heartBeat();
 }

@@ -1,5 +1,7 @@
 package com.fr.swift.cloud.api.server;
 
+import com.fr.swift.cloud.api.service.IdleService;
+import com.fr.swift.cloud.api.service.JdbcIdleResponse;
 import com.fr.swift.cloud.basics.annotation.ProxyService;
 import com.fr.swift.cloud.beans.annotation.SwiftBean;
 import com.fr.swift.cloud.log.SwiftLoggers;
@@ -15,7 +17,8 @@ import com.fr.swift.cloud.log.SwiftLoggers;
 public class IdleServiceImpl implements IdleService {
 
     @Override
-    public void heartBeat() {
+    public JdbcIdleResponse heartBeat() {
         SwiftLoggers.getLogger().info("Receive heart beat detection");
+        return new JdbcIdleResponse();
     }
 }

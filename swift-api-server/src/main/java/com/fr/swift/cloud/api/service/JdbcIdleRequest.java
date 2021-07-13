@@ -1,6 +1,5 @@
-package com.fr.swift.cloud.jdbc.request;
+package com.fr.swift.cloud.api.service;
 
-import com.fr.swift.cloud.api.server.IdleService;
 import com.fr.swift.cloud.basic.SwiftRequest;
 
 import java.lang.reflect.Method;
