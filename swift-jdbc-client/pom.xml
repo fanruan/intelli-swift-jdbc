@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>swift-jdbc-client</artifactId>
+    <version>2021.8</version>>
 
     <build>
         <plugins>
@@ -34,6 +35,7 @@
                                     <include>javax.persistence:javax.persistence-api</include>
                                     <include>org.antlr:antlr4-runtime</include>
                                     <include>com.fasterxml.jackson.core</include>
+                                    <include>com.esotericsoftware:kryo</include>
                                     <include>com.fr.intelligence:swift-api-server</include>
                                     <include>com.fr.intelligence:swift-jdbc-parser</include>
                                     <include>com.fr.intelligence:swift-base-common</include>
@@ -78,6 +80,11 @@
             <artifactId>fine-third</artifactId>
             <version>10.0-RELEASE-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>5.1.1</version>
         </dependency>
     </dependencies>
 

@@ -1,8 +1,12 @@
 package com.fr.swift.cloud.jdbc;
 
+import com.fr.swift.cloud.config.ConfigInputUtil;
 import com.fr.swift.cloud.jdbc.rpc.serializable.clazz.CachingClassResolver;
 import com.fr.swift.cloud.jdbc.rpc.serializable.clazz.ClassLoaderClassResolver;
 import com.fr.swift.cloud.jdbc.rpc.serializable.clazz.ClassResolver;
+import com.fr.swift.cloud.rpc.compress.CompressMode;
+import com.fr.swift.cloud.rpc.serialize.SerializeProtocol;
+import com.fr.swift.cloud.util.Strings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,10 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2018/11/16
  */
 public final class JdbcProperty {
-    private static JdbcProperty property;
 
-    static {
-        load();
+    private static final JdbcProperty PROPERTY = new JdbcProperty();
+
+    public JdbcProperty() {
+        initProperties();
     }
 
     private String connectionSchema;
@@ -30,89 +35,44 @@ public final class JdbcProperty {
     private int connectionPoolSize;
     private long readIdleTimeout;
     private long writeIdleTimeout;
-
-    public JdbcProperty(
-            String connectionSchema,
-            int majorVersion,
-            int minorVersion,
-            long connectionTimeout,
-            int statementMaxIdle,
-            boolean compliant,
-            int connectionPoolSize,
-            long readIdleTimeout,
-            long writeIdleTimeout) {
-        this.connectionSchema = connectionSchema;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-        this.connectionTimeout = connectionTimeout;
-        this.statementMaxIdle = statementMaxIdle;
-        this.compliant = compliant;
-        ClassResolver resolver = new ClassLoaderClassResolver(Thread.currentThread().getContextClassLoader());
-        this.resolver = new CachingClassResolver(resolver, new ConcurrentHashMap<String, Class<?>>());
-        this.connectionPoolSize = connectionPoolSize;
-        this.readIdleTimeout = readIdleTimeout;
-        this.writeIdleTimeout = writeIdleTimeout;
-    }
+    private int rpcMaxObjectSize;
+    private SerializeProtocol serializeProtocol;
+    private CompressMode compressMode;
 
     public static JdbcProperty get() {
-        return property;
+        return PROPERTY;
     }
 
-    private static void load() {
-        InputStream is = JdbcProperty.class.getClassLoader().getResourceAsStream("swift-cloud-jdbc.properties");
-        if (null == is) {
-            property = new JdbcProperty(
-                    "jdbc:swift",
-                    10,
-                    1,
-                    600000,
-                    200,
-                    false,
-                    64,
-                    300000,
-                    1500000
-            );
-            return;
-        }
+    private void initProperties() {
         Properties properties = new Properties();
-        try {
-            properties.load(is);
-            String connectionSchema = properties.getProperty("connection.schema", "jdbc:swift");
-            int majorVersion = Integer.parseInt(properties.getProperty("driver.version.major", "10"));
-            int minorVersion = Integer.parseInt(properties.getProperty("driver.version.minor", "1"));
-            long timeout = Long.parseLong(properties.getProperty("connection.timeout", "30000"));
-            int statementMaxIdle = Integer.parseInt(properties.getProperty("statement.maxIdle", "200"));
-            boolean compliant = Boolean.parseBoolean(properties.getProperty("driver.compliant", "false"));
-            int connectionPoolSize = Integer.parseInt(properties.getProperty("connection.pool.size", "64"));
-            long readIdleTimeout = Long.parseLong(properties.getProperty("read.idle.timeout", "600000"));
-            long writeIdleTimeout = Long.parseLong(properties.getProperty("write.idle.timeout", "1800000"));
-            property = new JdbcProperty(
-                    connectionSchema,
-                    majorVersion,
-                    minorVersion,
-                    timeout,
-                    statementMaxIdle,
-                    compliant,
-                    connectionPoolSize,
-                    readIdleTimeout,
-                    writeIdleTimeout);
-        } catch (IOException e) {
-            property = new JdbcProperty(
-                    "jdbc:swift",
-                    10,
-                    1,
-                    3000,
-                    200,
-                    false,
-                    64,
-                    600000,
-                    1800000
-            );
-        } finally {
-            try {
-                is.close();
-            } catch (IOException ignore) {
-            }
+        ClassResolver resolver = new ClassLoaderClassResolver(Thread.currentThread().getContextClassLoader());
+        this.resolver = new CachingClassResolver(resolver, new ConcurrentHashMap<>());
+        try (InputStream inputStream = ConfigInputUtil.getConfigInputStream("swift-cloud-jdbc.properties")) {
+            properties.load(inputStream);
+            connectionSchema = properties.getProperty("connection.schema", "jdbc:swift");
+            majorVersion = Integer.parseInt(properties.getProperty("driver.version.major", "10"));
+            minorVersion = Integer.parseInt(properties.getProperty("driver.version.minor", "1"));
+            connectionTimeout = Long.parseLong(properties.getProperty("connection.timeout", "30000"));
+            statementMaxIdle = Integer.parseInt(properties.getProperty("statement.maxIdle", "200"));
+            compliant = Boolean.parseBoolean(properties.getProperty("driver.compliant", "false"));
+            connectionPoolSize = Integer.parseInt(properties.getProperty("connection.pool.size", "64"));
+            readIdleTimeout = Long.parseLong(properties.getProperty("read.idle.timeout", "1800000"));
+            writeIdleTimeout = Long.parseLong(properties.getProperty("write.idle.timeout", "1800000"));
+            rpcMaxObjectSize = Integer.parseInt((String) properties.getOrDefault("rpcMaxObjectSize", "2147483647"));
+            serializeProtocol = SerializeProtocol.getEnum((String) properties.getOrDefault("serialize.protocol", "jdk"));
+            compressMode = CompressMode.getEnum((String) properties.getOrDefault("compress.algorithm", Strings.EMPTY));
+        } catch (IOException ignore) {
+            connectionSchema = "jdbc:swift";
+            majorVersion = 10;
+            minorVersion = 1;
+            connectionTimeout = 30000;
+            statementMaxIdle = 200;
+            compliant = false;
+            connectionPoolSize = 64;
+            readIdleTimeout = 1800000;
+            writeIdleTimeout = 1800000;
+            serializeProtocol = SerializeProtocol.getEnum("jdk");
+            compressMode = CompressMode.getEnum(Strings.EMPTY);
         }
     }
 
@@ -153,7 +113,19 @@ public final class JdbcProperty {
         return readIdleTimeout;
     }
 
+    public int getRpcMaxObjectSize() {
+        return rpcMaxObjectSize;
+    }
+
     public long getWriteIdleTimeout() {
         return writeIdleTimeout;
+    }
+
+    public SerializeProtocol getSerializeProtocol() {
+        return serializeProtocol;
+    }
+
+    public CompressMode getCompressMode() {
+        return compressMode;
     }
 }

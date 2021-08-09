@@ -2,7 +2,9 @@ package com.fr.swift.cloud.jdbc.rpc.connection;
 
 import com.fr.swift.cloud.jdbc.JdbcProperty;
 import com.fr.swift.cloud.jdbc.rpc.invoke.JdbcNettyHandler;
+import com.fr.swift.cloud.jdbc.rpc.serialize.SerializeFrame;
 import com.fr.swift.cloud.log.SwiftLoggers;
+import com.fr.swift.cloud.rpc.compress.CompressMode;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -12,9 +14,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -30,8 +29,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class JdbcNettyPoolFactory extends BaseKeyedPooledObjectFactory<String, JdbcNettyHandler> {
 
-    private static final int MAX_OBJ_SIZE = Integer.MAX_VALUE;
-
     // 读超时
     private static final long READ_IDLE_TIME_OUT = JdbcProperty.get().getReadIdleTimeout();
 
@@ -41,7 +38,10 @@ public class JdbcNettyPoolFactory extends BaseKeyedPooledObjectFactory<String, J
     // 所有超时
     private static final int ALL_IDLE_TIME_OUT = 0;
 
+    private final JdbcProperty jdbcProperty;
+
     public JdbcNettyPoolFactory() {
+        this.jdbcProperty = JdbcProperty.get();
     }
 
     @Override
@@ -65,10 +65,10 @@ public class JdbcNettyPoolFactory extends BaseKeyedPooledObjectFactory<String, J
             @Override
             public void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast(
-                        new ObjectDecoder(MAX_OBJ_SIZE, ClassResolvers.cacheDisabled(this
-                                .getClass().getClassLoader())));
-                pipeline.addLast(new ObjectEncoder());
+
+                CompressMode compressMode = jdbcProperty.getCompressMode();
+                compressMode.setMaxObjectSize(jdbcProperty.getRpcMaxObjectSize());
+                SerializeFrame.select(jdbcProperty.getSerializeProtocol(), compressMode, pipeline); // 处理 压缩 序列化
                 pipeline.addLast(new IdleStateHandler(READ_IDLE_TIME_OUT, WRITE_IDLE_TIME_OUT, ALL_IDLE_TIME_OUT, TimeUnit.MILLISECONDS));
                 pipeline.addLast(handler);
             }
